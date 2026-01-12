@@ -19,6 +19,11 @@ Image::Image(const char* path) : _path(path)
     }
 }
 
+Image::Image(std::string path) : Image(path.c_str())
+{
+}
+
+
 
 Image::~Image()
 {

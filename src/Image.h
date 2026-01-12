@@ -9,6 +9,7 @@ class Image
 
         Image() = delete;
         Image(const char* path);
+        Image(std::string path);
 
         Image(const Image&) = delete;
         Image& operator=(const Image&) = delete ;

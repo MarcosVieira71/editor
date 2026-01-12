@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QUiLoader>
 #include <QGraphicsView>
+#include <QObject>
 
 #include <stdexcept>
 
@@ -24,7 +25,13 @@ View::View() : _scene(std::make_unique<QGraphicsScene>())
     auto graphicsView = _window->findChild<QGraphicsView*>("graphicsView");
     if (!graphicsView)
         throw std::runtime_error("graphicsView not found in UI");
+
     graphicsView->setScene(_scene.get());
+
+    auto openAction = _window->findChild<QAction*>("actionOpen");
+    if (!openAction)
+        throw std::runtime_error("actionOpen not found");
+    _openAction.reset(openAction); 
 }
 
 void View::show()
@@ -37,6 +44,13 @@ QGraphicsScene* View::scene()
     return _scene.get();
 }
 
-View::~View()
+void View::setOpenMenuCallback(std::function<void()> f)
 {
+    QObject::connect(
+        _openAction.get(),
+        &QAction::triggered,
+        [cb = std::move(f)](bool) {
+            cb();
+        }
+    );
 }
