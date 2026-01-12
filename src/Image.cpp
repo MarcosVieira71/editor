@@ -1,5 +1,7 @@
 #include "Image.h"
 
+#include <QImage>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -41,4 +43,17 @@ const int& Image::channels() const
 const unsigned char* Image::data() const
 {
     return _data;
+}
+
+QImage Image::toQImage(const Image& image)
+{
+    QImage qimg(
+        image.data(),
+        image.width(),
+        image.height(),
+        image.width() * 4,
+        QImage::Format_RGBA8888
+    );
+
+    return qimg;
 }

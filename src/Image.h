@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+class QImage;
 
 class Image
 {
@@ -18,6 +19,7 @@ class Image
         const int& height() const;
         const int& channels() const;
         const unsigned char* data() const;
+        static QImage toQImage(const Image& image);
 
 
     private:

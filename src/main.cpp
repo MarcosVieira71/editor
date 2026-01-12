@@ -1,39 +1,20 @@
 #include <QApplication>
-#include <QFile>
-#include <QUiLoader>
+
 #include <QWidget>
-#include <QLabel>
+#include <QPixmap>
 
 #include "Image.h"
-#include "ToQImage.h"
+#include "MainWindow/View.h"
 
 constexpr const char* path =
-    "/home/marcosvieira/editor/test_images/test.jpg";
+    "../test_images/test.jpg";
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    QUiLoader loader;
-    QFile file("/home/marcosvieira/editor/ui/MainWindow.ui");
-    if (!file.open(QFile::ReadOnly)) {
-        printf("oioii\n");
-        return -1;
-    }
+    View main;
+    main.show();
+    main.scene()->addPixmap(QPixmap::fromImage(Image::toQImage(Image(path))));
 
-    QWidget *window = loader.load(&file);
-    file.close();
-
-    if (!window) {
-        printf("oioii\n");
-
-        return -1;
-    }
-
-    Image img(path);
-    QImage qimg = to_QImage(img);
-    QPixmap pixmap = QPixmap::fromImage(qimg);
-
-
-    window->show();
     return app.exec();
 }
