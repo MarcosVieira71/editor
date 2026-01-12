@@ -1,34 +1,24 @@
 #pragma once
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
-#include <stdexcept>
 #include <string>
-
 
 class Image
 {
     public:
 
         Image() = delete;
-        Image(const char* path) : _path(path)
-        {
-            _data = stbi_load(path, &_width, &_height, &_channels, 0);
-            if(!_data){
-                throw std::runtime_error("Error loading data");
-            }
-        }
+        Image(const char* path);
 
         Image(const Image&) = delete;
-        Image& operator=(const Image&) = delete;
+        Image& operator=(const Image&) = delete ;
+        ~Image();
 
-        ~Image()
-        {
-            stbi_image_free(_data);
-        }
+        const std::string& path() const;
+        const int& width() const;
+        const int& height() const;
+        const int& channels() const;
+        const unsigned char* data() const;
+
 
     private:
         const std::string _path;
