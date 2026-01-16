@@ -3,22 +3,24 @@
 #include <QPixmap>
 #include <QFileDialog>
 
-#include "View.h"
-#include "../Image.h"
+#include <Image.h>
 
-Presenter::Presenter() : _view(std::make_unique<View>())
+#include "View.h"
+#include "Model.h"
+#include "ToQImageAdapter.h"
+
+
+Presenter::Presenter() : _view(std::make_unique<View>()), _model(std::make_unique<Model>())
 {   
     _view->setOpenMenuCallback([&](){onOpenImage();});
-}
-
-Presenter::~Presenter()
-{
 }
 
 void Presenter::start()
 {
    _view->show();
 } 
+
+Presenter::~Presenter() = default;
 
 void Presenter::onOpenImage()
 {
@@ -32,9 +34,10 @@ void Presenter::onOpenImage()
     if (path.isEmpty())
         return;
 
-    auto pixmap = QPixmap::fromImage(
-        Image::toQImage(Image(path.toStdString()))
-    );
+    auto img = Image(path.toStdString());
+
+    auto pixmap = QPixmap::fromImage(toQImage(img));
+    _model->addImage(std::move(img));
 
     _view->setImage(pixmap);
 }

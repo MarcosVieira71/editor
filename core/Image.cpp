@@ -17,10 +17,38 @@ Image::Image(const char* path) : _path(path)
     if(!_data){
         throw std::runtime_error("Error loading data");
     }
+    _channels = 4;
 }
 
 Image::Image(std::string path) : Image(path.c_str())
 {
+}
+
+Image::Image(Image&& other) noexcept
+    : _path(std::move(other._path)),
+      _width(other._width),
+      _height(other._height),
+      _channels(other._channels),
+      _data(other._data)
+{
+    other._data = nullptr;
+}
+
+Image& Image::operator=(Image&& other) noexcept
+{
+    if (this != &other)
+    {
+        stbi_image_free(_data);
+
+        _path = std::move(other._path);
+        _width = other._width;
+        _height = other._height;
+        _channels = other._channels;
+        _data = other._data;
+
+        other._data = nullptr;
+    }
+    return *this;
 }
 
 
@@ -28,6 +56,11 @@ Image::Image(std::string path) : Image(path.c_str())
 Image::~Image()
 {
     stbi_image_free(_data);
+}
+
+const std::string& Image::path() const
+{
+    return _path;
 }
 
 const int& Image::width() const
@@ -50,15 +83,4 @@ const unsigned char* Image::data() const
     return _data;
 }
 
-QImage Image::toQImage(const Image& image)
-{
-    QImage qimg(
-        image.data(),
-        image.width(),
-        image.height(),
-        image.width() * 4,
-        QImage::Format_RGBA8888
-    );
 
-    return qimg;
-}
