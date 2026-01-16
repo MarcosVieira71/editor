@@ -32,6 +32,14 @@ View::View() : _scene(std::make_unique<QGraphicsScene>())
     if (!openAction)
         throw std::runtime_error("actionOpen not found");
     _openAction.reset(openAction); 
+
+    graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    graphicsView->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+    graphicsView->setResizeAnchor(QGraphicsView::AnchorViewCenter);
+    graphicsView->setRenderHint(QPainter::SmoothPixmapTransform);
+
 }
 
 void View::show()
@@ -52,5 +60,17 @@ void View::setOpenMenuCallback(std::function<void()> f)
         [cb = std::move(f)](bool) {
             cb();
         }
+    );
+}
+
+void View::fitImage()
+{
+    auto graphicsView = _window->findChild<QGraphicsView*>("graphicsView");
+    if (!graphicsView)
+        return;
+
+    graphicsView->fitInView(
+        _scene->sceneRect(),
+        Qt::KeepAspectRatio
     );
 }

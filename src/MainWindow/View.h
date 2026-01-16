@@ -19,6 +19,7 @@ public:
     void setOpenMenuCallback(std::function<void()> f);
 
     void show();
+    void fitImage();
     View();
     ~View() = default;
 };

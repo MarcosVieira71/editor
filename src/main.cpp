@@ -22,7 +22,11 @@ int main(int argc, char *argv[])
 
         if (!path.isEmpty()) {
             printf("%s\n", path.toUtf8().constData());
-            main.scene()->addPixmap(QPixmap::fromImage(Image::toQImage(Image(path.toStdString()))));
+            main.scene()->clear();
+            auto pixmap = QPixmap::fromImage(Image::toQImage(Image(path.toStdString())));
+            main.scene()->addPixmap(pixmap);
+            main.scene()->setSceneRect(pixmap.rect());
+            main.fitImage();
         }
     });
 
