@@ -8,6 +8,7 @@ find_package(Qt5 REQUIRED COMPONENTS Widgets UiTools)
 add_executable(editor 
 src/main.cpp 
 src/Image.cpp 
+src/MainWindow/Presenter.cpp
 src/MainWindow/View.cpp)
 
 target_link_libraries(editor PRIVATE stb::stb Qt5::Widgets Qt5::UiTools)

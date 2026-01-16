@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QGraphicsScene>
 #include <QAction>
+#include <QPixmap>
 
 #include <functional>
 
@@ -12,6 +13,7 @@ private:
     std::unique_ptr<QWidget> _window;
     std::unique_ptr<QGraphicsScene> _scene;
     std::unique_ptr<QAction> _openAction;
+    void fitImage();
 
 public:
 
@@ -19,7 +21,8 @@ public:
     void setOpenMenuCallback(std::function<void()> f);
 
     void show();
-    void fitImage();
+    void setImage(const QPixmap& pixmap);
+
     View();
     ~View() = default;
 };

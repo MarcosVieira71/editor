@@ -63,6 +63,14 @@ void View::setOpenMenuCallback(std::function<void()> f)
     );
 }
 
+void View::setImage(const QPixmap& pixmap)
+{
+    scene()->clear();
+    scene()->addPixmap(pixmap);
+    scene()->setSceneRect(pixmap.rect());
+    fitImage();
+}
+
 void View::fitImage()
 {
     auto graphicsView = _window->findChild<QGraphicsView*>("graphicsView");

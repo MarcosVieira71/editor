@@ -1,34 +1,13 @@
 #include <QApplication>
 
-#include <QWidget>
-#include <QPixmap>
-#include <QFileDialog>
-
 #include "Image.h"
-#include "MainWindow/View.h"
+#include "MainWindow/Presenter.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    View main;
-    main.show();
-    main.setOpenMenuCallback([&main]() {
-        QString path = QFileDialog::getOpenFileName(
-            nullptr,                
-            "Open file",          
-            QString(),                
-            "Images (*.jpeg *.jpg *.png)"
-        );
-
-        if (!path.isEmpty()) {
-            printf("%s\n", path.toUtf8().constData());
-            main.scene()->clear();
-            auto pixmap = QPixmap::fromImage(Image::toQImage(Image(path.toStdString())));
-            main.scene()->addPixmap(pixmap);
-            main.scene()->setSceneRect(pixmap.rect());
-            main.fitImage();
-        }
-    });
+    Presenter p;
+    p.start();
 
     return app.exec();
 }
