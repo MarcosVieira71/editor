@@ -1,6 +1,6 @@
-#include "Grayscale.h"
+#include "grayscale.h"
 
-Image Grayscale::apply(const Image& input) const
+Image grayscale(const Image& input)
 {
     Image out = input.clone();
 

@@ -1,7 +1,7 @@
 add_library(core STATIC
     Image.cpp
-    filters/Grayscale.cpp
-    filters/Inversion.cpp
+    filters/grayscale.cpp
+    filters/inversion.cpp
 )
 
 target_include_directories(core

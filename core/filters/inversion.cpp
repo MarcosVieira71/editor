@@ -1,7 +1,6 @@
-#include "Inversion.h"
+#include "inversion.h"
 
-
-Image Inversion::apply(const Image& input) const
+Image inversion(const Image& input)
 {
     Image out = input.clone();
 

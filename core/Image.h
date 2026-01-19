@@ -15,15 +15,10 @@ class QImage;
 class Image
 {
     public:
+        Image() = default;
         Image(const char* path);
         Image(std::string path);
 
-        Image(const Image&) = delete;
-        Image& operator=(const Image&) = delete;
-
-        Image(Image&&) noexcept = default;
-        Image& operator=(Image&&) noexcept = default;
-        
         ~Image();
         const RGBA& pixel(int x, int y) const;
         RGBA& pixel(int x, int y);
@@ -36,8 +31,7 @@ class Image
         Image clone() const;
 
     private:
-        Image() = default;
-
+  
         std::string _path;
 
         int _width;

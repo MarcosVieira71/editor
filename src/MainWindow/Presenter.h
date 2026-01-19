@@ -16,6 +16,10 @@ public:
     Presenter();
     ~Presenter();
     void start();
+    void onInversion();
+    void onGrayscale();
+    void onUndo();
+    void onRedo();
 
 };
 
