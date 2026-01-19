@@ -7,56 +7,57 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+#include <cstring>
 #include <stdexcept>
 #include <string>
 
 Image::Image(const char* path) : _path(path)
 {
     //load images with 4 channels for qt integration, we can change this later
-    _data = stbi_load(path, &_width, &_height, &_channels, 4);
-    if(!_data){
+    auto data = stbi_load(path, &_width, &_height, &_channels, 4);
+    if(!data){
         throw std::runtime_error("Error loading data");
     }
     _channels = 4;
+    _pixels.resize(_width * _height);
+    std::memcpy(_pixels.data(), data, _pixels.size() * sizeof(RGBA));
+
+    stbi_image_free(data);
+
 }
 
 Image::Image(std::string path) : Image(path.c_str())
 {
 }
 
-Image::Image(Image&& other) noexcept
-    : _path(std::move(other._path)),
-      _width(other._width),
-      _height(other._height),
-      _channels(other._channels),
-      _data(other._data)
+Image Image::clone() const
 {
-    other._data = nullptr;
+    Image copy = Image();
+    copy._width = _width;
+    copy._height = _height;
+    copy._channels = _channels;
+    copy._pixels = _pixels;
+    copy._path = _path;
+    return copy;
 }
 
-Image& Image::operator=(Image&& other) noexcept
+const RGBA& Image::pixel(int x, int y) const
 {
-    if (this != &other)
-    {
-        stbi_image_free(_data);
-
-        _path = std::move(other._path);
-        _width = other._width;
-        _height = other._height;
-        _channels = other._channels;
-        _data = other._data;
-
-        other._data = nullptr;
+    if (x < 0 || x >= _width || y < 0 || y >= _height) {
+        throw std::out_of_range("Pixel out of bounds");
     }
-    return *this;
+    return _pixels[y * _width + x];
 }
 
-
-
-Image::~Image()
+RGBA& Image::pixel(int x, int y)
 {
-    stbi_image_free(_data);
+    if (x < 0 || x >= _width || y < 0 || y >= _height) {
+        throw std::out_of_range("Pixel out of bounds");
+    }
+    return _pixels[y * _width + x];
 }
+
+Image::~Image() = default;
 
 const std::string& Image::path() const
 {
@@ -80,7 +81,7 @@ const int& Image::channels() const
 
 const unsigned char* Image::data() const
 {
-    return _data;
+    return reinterpret_cast<const unsigned char*>(_pixels.data());
 }
 
 
