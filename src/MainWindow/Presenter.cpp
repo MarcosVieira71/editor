@@ -38,7 +38,7 @@ void Presenter::onOpenImage()
         nullptr,
         "Open file",
         QString(),
-        "Images (*.jpeg *.jpg *.png)"
+        "Images (*.jpeg *.jpg *.png *.bmp)"
     );
 
     if (path.isEmpty())
