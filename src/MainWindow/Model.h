@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <optional>
 
 #include <Image.h>
 
@@ -11,7 +12,7 @@ class Model
 {
 private:
    std::vector<Image> _container;
-   std::size_t _current = 0;
+   std::optional<std::size_t> _current;
 
    std::vector<std::unique_ptr<Command>> _undo;
    std::vector<std::unique_ptr<Command>> _redo;
@@ -22,8 +23,9 @@ public:
     Model();
     ~Model() = default;
 
-    const Image& currentImage();
-    void execute(std::unique_ptr<Command> cmd);
+    std::optional<const Image*> currentImage() const;
+    bool isImageSelected();
+    bool execute(std::unique_ptr<Command> cmd);
     bool redo();
     bool undo();
 

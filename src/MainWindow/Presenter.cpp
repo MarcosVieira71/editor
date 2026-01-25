@@ -14,7 +14,15 @@
 
 Presenter::Presenter() : _view(std::make_unique<View>()), _model(std::make_unique<Model>())
 {   
-    _view->setOpenMenuCallback([&](){onOpenImage();});
+    initActionMap();
+    _view->setActionCallback(
+        [this](ViewAction action) {
+            auto it = _actionMap.find(action);
+            if (it != _actionMap.end())
+                it->second();
+        }
+    );
+
 }
 
 void Presenter::start()
@@ -47,28 +55,45 @@ void Presenter::onOpenImage()
 
 void Presenter::onGrayscale()
 {
-    _model->execute(
+    if(_model->execute(
         std::make_unique<FilterCommand>(grayscale)
-    );
-    _view->setImage(QPixmap::fromImage(toQImage(_model->currentImage())));
+    )) refresh();
 }
+
 
 void Presenter::onInversion()
 {
-    _model->execute(
+    if(_model->execute(
         std::make_unique<FilterCommand>(inversion)
-    );
-    _view->setImage(QPixmap::fromImage(toQImage(_model->currentImage())));
+    )) refresh();
 }
 
 void Presenter::onUndo()
 {
     if (_model->undo())
-        _view->setImage(QPixmap::fromImage(toQImage(_model->currentImage())));
+        refresh();
 }
 
 void Presenter::onRedo()
 {
     if (_model->redo())
-        _view->setImage(QPixmap::fromImage(toQImage(_model->currentImage())));
+        refresh();
+}
+
+void Presenter::initActionMap()
+{
+    _actionMap = {
+        { ViewAction::Open,      [this]() { onOpenImage(); } },
+        { ViewAction::Grayscale, [this]() { if(_model->isImageSelected()) onGrayscale(); } },
+        { ViewAction::Inversion, [this]() { if(_model->isImageSelected()) onInversion(); } },
+        { ViewAction::FitImage,  [this]() { _view->fitImage(); } },
+        { ViewAction::Undo,      [this]() { onUndo(); } },
+        { ViewAction::Redo,      [this]() { onRedo(); } }
+    };
+}
+
+void Presenter::refresh()
+{
+    if(auto img = _model->currentImage(); img.has_value())
+        _view->setImage(QPixmap::fromImage(toQImage(**img)));
 }

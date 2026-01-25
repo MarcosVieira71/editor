@@ -2,6 +2,8 @@
 
 #include "Commands/Command.h"
 
+#include <stdexcept>
+
 Model::Model()
 {
 }
@@ -9,13 +11,17 @@ Model::Model()
 void Model::addImage(Image&& img)
 {
     _container.push_back(std::move(img));
+    _current = _container.size() - 1; //last index added
 }
 
-void Model::execute(std::unique_ptr<Command> cmd)
+bool Model::execute(std::unique_ptr<Command> cmd)
 {
-    cmd->apply(_container[_current]);
+    if(!isImageSelected()) return false;
+
+    cmd->apply(_container[*_current]);
     _undo.push_back(std::move(cmd));
     _redo.clear();
+    return true;
 }
 
 bool Model::redo()
@@ -26,7 +32,9 @@ bool Model::redo()
     auto cmd = std::move(_redo.back());
     _redo.pop_back();
 
-    cmd->apply(_container[_current]);
+    //if this happens, something went very wrong
+    if(!_current.has_value()) throw std::runtime_error("Invalid state");
+    cmd->apply(_container[*_current]);
     _undo.push_back(std::move(cmd));
 
     return true;
@@ -41,13 +49,24 @@ bool Model::undo()
     auto cmd = std::move(_undo.back());
     _undo.pop_back();
 
-    cmd->undo(_container[_current]);
+    //if this happens, something went very wrong
+    if(!_current.has_value()) throw std::runtime_error("Invalid state");
+    cmd->undo(_container[*_current]);
     _redo.push_back(std::move(cmd));
 
     return true;
 }
 
-const Image& Model::currentImage()
+std::optional<const Image*> Model::currentImage() const
 {
-    return _container[_current];
+    if (!_current)
+        return std::nullopt;
+
+    return &_container[*_current];
+}
+
+
+bool Model::isImageSelected()
+{
+    return _current.has_value();
 }
