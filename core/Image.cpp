@@ -79,9 +79,17 @@ const int& Image::channels() const
     return _channels;
 }
 
-const unsigned char* Image::data() const
+const RGBA* Image::data() const
+{
+    return _pixels.data();
+}
+
+RGBA* Image::data()
+{
+    return _pixels.data();
+}
+
+const unsigned char* Image::bytes() const
 {
     return reinterpret_cast<const unsigned char*>(_pixels.data());
 }
-
-

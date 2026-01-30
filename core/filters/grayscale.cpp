@@ -4,23 +4,20 @@ Image grayscale(const Image& input)
 {
     Image out = input.clone();
 
-    for (int y = 0; y < input.height(); ++y) {
-        for (int x = 0; x < input.width(); ++x) {
+    const auto* src = input.data();
+    auto* dst = out.data();
+    int total = input.width() * input.height();
 
-            const auto& src = input.pixel(x, y);
-            auto& dst = out.pixel(x, y);
+    for (int i = 0; i < total; i++) {
+        unsigned char gray =
+            0.22f * src[i].r +
+            0.72f * src[i].g +
+            0.07f * src[i].b;
 
-            unsigned char gray = static_cast<unsigned char>(
-                0.22 * src.r +
-                0.72 * src.g +
-                0.07 * src.b
-            );
-
-            dst.r = gray;
-            dst.g = gray;
-            dst.b = gray;
-            dst.a = src.a;
-        }
+        dst[i].r = gray;
+        dst[i].g = gray;
+        dst[i].b = gray;
+        dst[i].a = src[i].a;
     }
 
     return out;

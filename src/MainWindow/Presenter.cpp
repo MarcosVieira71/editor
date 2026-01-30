@@ -12,6 +12,9 @@
 #include "ToQImageAdapter.h"
 #include "Commands/FilterCommand.h"
 
+#include <ThreadPool.h>
+
+
 Presenter::Presenter() : _view(std::make_unique<View>()), _model(std::make_unique<Model>())
 {   
     initActionMap();
@@ -55,29 +58,55 @@ void Presenter::onOpenImage()
 
 void Presenter::onGrayscale()
 {
-    if(_model->execute(
-        std::make_unique<FilterCommand>(grayscale)
-    )) refresh();
+    runAsync(
+        [this]() {
+            _model->execute(std::make_unique<FilterCommand>(grayscale));
+        },
+        [this]() {
+            refresh();
+        }
+    );
 }
-
 
 void Presenter::onInversion()
 {
-    if(_model->execute(
-        std::make_unique<FilterCommand>(inversion)
-    )) refresh();
+    runAsync(
+        [this]() {
+            _model->execute(std::make_unique<FilterCommand>(inversion));
+        },
+        [this](){
+            refresh();
+        }
+    );
 }
 
 void Presenter::onUndo()
 {
-    if (_model->undo())
-        refresh();
+    runAsync(
+        [this]() {
+            _model->undo();
+        },
+        [this]() {
+            refresh();
+        }
+    );
 }
 
 void Presenter::onRedo()
 {
-    if (_model->redo())
-        refresh();
+    runAsync(
+        [this]() {
+            _model->redo();
+        },
+        [this]() {
+            refresh();
+        }
+    );
+}
+
+void Presenter::runAsync(std::function<void()> task, std::function<void()> after_task)  
+{
+    ThreadPool::getInstance().runAsync(std::move(task), std::move(after_task));
 }
 
 void Presenter::initActionMap()

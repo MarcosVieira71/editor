@@ -27,8 +27,11 @@ class Image
         const int& width() const;
         const int& height() const;
         const int& channels() const;
-        const unsigned char* data() const;
+        const unsigned char* bytes() const;
+        const RGBA* data() const;
+        RGBA* data();
         Image clone() const;
+        
 
     private:
   

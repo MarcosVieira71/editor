@@ -7,7 +7,7 @@
 inline QImage toQImage(const Image& image)
 {
     QImage qimg(
-        image.data(),
+        image.bytes(),
         image.width(),
         image.height(),
         image.width() * image.channels(),

@@ -9,7 +9,8 @@ class EditorConan(ConanFile):
 
     requires = [
         "stb/cci.20230920",
-        "qt/5.15.14"
+        "qt/5.15.14",
+        "llvm-openmp/20.1.6"
     ]
 
     generators = (

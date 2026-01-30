@@ -4,17 +4,15 @@ Image inversion(const Image& input)
 {
     Image out = input.clone();
 
-    for (int y = 0; y < input.height(); ++y) {
-        for (int x = 0; x < input.width(); ++x) {
+    auto* src = input.data();
+    auto* dst = out.data();
+    int total = input.width() * input.height();
 
-            const auto& src = input.pixel(x, y);
-            auto& dst = out.pixel(x, y);
-            
-            dst.r = 255 - src.r;
-            dst.g = 255 - src.g;
-            dst.b = 255 - src.b;
-            dst.a = src.a;
-        }
+    for (int i = 0; i < total; ++i) {
+        dst[i].r = 255 - src[i].r;
+        dst[i].g = 255 - src[i].r;
+        dst[i].b = 255 - src[i].r;
+        dst[i].a = src[i].a;
     }
 
     return out;
