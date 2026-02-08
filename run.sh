@@ -12,4 +12,8 @@ if [[ ! -x "$BIN" ]]; then
   exit 1
 fi
 
-exec "$BIN"
+if [[ "$BUILD_TYPE" == "Debug" ]]; then
+  exec gdb --args "$BIN"
+else
+  exec "$BIN"
+fi

@@ -62,17 +62,23 @@ class ObservableContainer
             });
         }
 
-        Subscription subscribe(Observer obs) 
+        Subscription subscribe(Observer obs)
         {
-            _observers.push_back(std::move(obs));
-            auto it = std::prev(_observers.end());
+            const std::size_t id = _nextId++;
+            _observers.emplace_back(id, std::move(obs));
 
             return Subscription{
-                [this, it]() {
-                    _observers.erase(it);
+                [this, id]() {
+                    auto it = std::remove_if(
+                        _observers.begin(),
+                        _observers.end(),
+                        [id](auto& pair) { return pair.first == id; }
+                    );
+                    _observers.erase(it, _observers.end());
                 }
             };
         }
+
 
         std::size_t size()
         {
@@ -96,12 +102,11 @@ class ObservableContainer
 
         void notify(const ContainerEvent<T>& ev)
         {
-            auto observers = _observers;
-            for (auto& obs : observers)
+            for (auto& [id, obs] : _observers)
                 obs(ev);
         }
 
-
+        std::size_t _nextId = 0;
+        std::vector<std::pair<std::size_t, Observer>> _observers;
         std::vector<T> _container;       
-        std::vector<Observer> _observers;
 };

@@ -9,14 +9,18 @@ BUILD_DIR="$BUILD_ROOT/$BUILD_TYPE"
 
 mkdir -p "$BUILD_DIR"
 
-conan install "$SCRIPT_DIR" \
-  --output-folder="$BUILD_DIR" \
-  --build=missing \
-  -s build_type="$BUILD_TYPE"
+if [[ ! -f "$BUILD_DIR/conan_toolchain.cmake" ]]; then
+  conan install "$SCRIPT_DIR" \
+    --output-folder="$BUILD_DIR" \
+    --build=missing \
+    -s build_type="$BUILD_TYPE" \
+    -v quiet
+fi
 
 cmake -S "$SCRIPT_DIR" -B "$BUILD_DIR" \
   -G Ninja \
   -DCMAKE_TOOLCHAIN_FILE="$BUILD_DIR/conan_toolchain.cmake" \
-  -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
+  -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+  --log-level=WARNING
 
 cmake --build "$BUILD_DIR"

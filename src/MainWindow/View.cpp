@@ -15,7 +15,7 @@
 View::View() : _scene(QGraphicsScene())
 {
     QUiLoader loader;
-    QFile file("../ui/MainWindow.ui");
+    QFile file("ui/MainWindow.ui");
     if (!file.open(QFile::ReadOnly))
         throw std::runtime_error("Error loading MainWindow.ui");
  
