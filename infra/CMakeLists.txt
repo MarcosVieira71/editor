@@ -4,5 +4,5 @@ add_library(infra STATIC
 
 target_include_directories(infra
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
