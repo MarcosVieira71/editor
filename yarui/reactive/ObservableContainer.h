@@ -37,6 +37,10 @@ class ObservableContainer
         ObservableContainer(ObservableContainer&&) = delete;
         ObservableContainer& operator=(ObservableContainer&&) = delete;
 
+        ~ObservableContainer()
+        {
+            _observers.clear();
+        }
 
         void add(const T& item)
         {
@@ -67,18 +71,18 @@ class ObservableContainer
             const std::size_t id = _nextId++;
             _observers.emplace_back(id, std::move(obs));
 
-            return Subscription{
-                [this, id]() {
-                    auto it = std::remove_if(
-                        _observers.begin(),
-                        _observers.end(),
-                        [id](auto& pair) { return pair.first == id; }
-                    );
-                    _observers.erase(it, _observers.end());
-                }
+            auto unsubscribeFunc = [observers = &_observers, id]() {
+                if (!observers) return;
+                auto it = std::remove_if(
+                    observers->begin(),
+                    observers->end(),
+                    [id](auto& pair) { return pair.first == id; }
+                );
+                observers->erase(it, observers->end());
             };
-        }
 
+            return Subscription{std::move(unsubscribeFunc)};
+        }
 
         std::size_t size()
         {

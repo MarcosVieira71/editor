@@ -19,6 +19,11 @@ class TreeWidget
     TreeWidget(QTreeWidget* widget) : _widget(widget)
     {}
 
+    ~TreeWidget()
+    {
+        _subscription = {};
+    }
+
     void bindContainer(ObservableContainer<T>& container, std::function<std::string(const T&)> toText)
     {
         _widget->clear();
@@ -28,20 +33,22 @@ class TreeWidget
         }
 
         _subscription = container.subscribe(
-            [this, toText](const ContainerEvent<T>& ev)
+            [widget = _widget, toText](const ContainerEvent<T>& ev)
             {
+                if (!widget) return; 
+
                 switch (ev.type)
                 {
                     case ContainerEvent<T>::Type::Added:
                         if(!ev.item) throw std::runtime_error("Invalid optional");
-                        
-                        addItem(QString::fromStdString(toText(*ev.item)));
+                        {
+                            auto* item = new QTreeWidgetItem(widget);
+                            item->setText(0, QString::fromStdString(toText(*ev.item)));
+                        }
                         break;
 
                     case ContainerEvent<T>::Type::Removed:
-                        delete _widget->takeTopLevelItem(
-                            static_cast<int>(ev.index)
-                        );
+                        delete widget->takeTopLevelItem(static_cast<int>(ev.index));
                         break;
 
                     default:

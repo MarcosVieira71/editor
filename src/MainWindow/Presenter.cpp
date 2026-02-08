@@ -7,6 +7,7 @@
 #include <core/filters/grayscale.h>
 #include <core/filters/inversion.h>
 #include <infra/ThreadPool.h>
+#include <infra/TaskScheduler.h>
 
 #include "View.h"
 #include "Model.h"
@@ -34,7 +35,10 @@ void Presenter::start()
     _view->bindModel(_model->images());
 } 
 
-Presenter::~Presenter() = default;
+Presenter::~Presenter() {
+    _view.reset();
+    _model.reset();
+}
 
 void Presenter::onOpenImage()
 {
@@ -48,29 +52,31 @@ void Presenter::onOpenImage()
     if (path.isEmpty())
         return;
 
-    auto img = Image(path.toStdString());
-
-    auto pixmap = QPixmap::fromImage(toQImage(img));
-    _model->addImage(std::move(img));
-    _view->setImage(pixmap);
+    TaskScheduler::schedule<Image>(
+        [&path](){return Image(path.toStdString());},
+        [this](Image&& img){
+            auto pixmap = QPixmap::fromImage(toQImage(img));
+            _model->addImage(std::move(img));
+            _view->setImage(pixmap);
+        } 
+    );
 }
 
 
-void Presenter::onGrayscale()
-{
-    runAsync(
-        [this]() {
-            _model->execute(std::make_unique<FilterCommand>(grayscale));
+void Presenter::onGrayscale() {
+    TaskScheduler::schedule(
+        [this]() { 
+            _model->execute(std::make_unique<FilterCommand>(grayscale)); 
         },
-        [this]() {
-            refresh();
+        [this]() { 
+            refresh(); 
         }
     );
 }
 
 void Presenter::onInversion()
 {
-    runAsync(
+    TaskScheduler::schedule(
         [this]() {
             _model->execute(std::make_unique<FilterCommand>(inversion));
         },
@@ -82,7 +88,7 @@ void Presenter::onInversion()
 
 void Presenter::onUndo()
 {
-    runAsync(
+    TaskScheduler::schedule(
         [this]() {
             _model->undo();
         },
@@ -94,7 +100,7 @@ void Presenter::onUndo()
 
 void Presenter::onRedo()
 {
-    runAsync(
+    TaskScheduler::schedule(
         [this]() {
             _model->redo();
         },
@@ -102,11 +108,6 @@ void Presenter::onRedo()
             refresh();
         }
     );
-}
-
-void Presenter::runAsync(std::function<void()> task, std::function<void()> after_task)  
-{
-    ThreadPool::getInstance().runAsync(std::move(task), std::move(after_task));
 }
 
 void Presenter::initActionMap()

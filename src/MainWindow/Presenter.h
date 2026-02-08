@@ -23,8 +23,6 @@ public:
     Presenter();
     ~Presenter();
 
-    void runAsync(std::function<void()> task, std::function<void()> after_task);
-
     void start();
     void onInversion();
     void onGrayscale();
