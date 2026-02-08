@@ -1,5 +1,5 @@
 #pragma once
 
-#include "Image.h"
+#include "core/Image.h"
 
 Image inversion(const Image& input);
