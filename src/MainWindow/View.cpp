@@ -7,9 +7,12 @@
 #include <QMenu>
 #include <QAction>
 
+#include <core/Image.h>
+#include <yarui/ui/ContextMenu.h>
+
 #include <stdexcept>
 
-View::View() : _scene(std::make_unique<QGraphicsScene>())
+View::View() : _scene(QGraphicsScene())
 {
     QUiLoader loader;
     QFile file("../ui/MainWindow.ui");
@@ -23,17 +26,14 @@ View::View() : _scene(std::make_unique<QGraphicsScene>())
     if (!w)
         throw std::runtime_error("Error creating MainWindow widget");
 
-    _window.reset(w);
+    _window = w;
     auto graphicsView = _window->findChild<QGraphicsView*>("graphicsView");
     if (!graphicsView)
         throw std::runtime_error("graphicsView not found in UI");
+    
+    _treeWidget = TreeWidget<Image>(_window->findChild<QTreeWidget*>("treeWidget"));
 
-    graphicsView->setScene(_scene.get());
-
-    auto openAction = _window->findChild<QAction*>("actionOpen");
-    if (!openAction)
-        throw std::runtime_error("actionOpen not found");
-    _openAction.reset(openAction); 
+    graphicsView->setScene(&_scene);
 
     graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -41,15 +41,15 @@ View::View() : _scene(std::make_unique<QGraphicsScene>())
     graphicsView->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
     graphicsView->setResizeAnchor(QGraphicsView::AnchorViewCenter);
     graphicsView->setRenderHint(QPainter::SmoothPixmapTransform);
-    graphicsView->setContextMenuPolicy(Qt::CustomContextMenu);
+    
+    auto openAction = _window->findChild<QAction*>("actionOpen");
+    if (!openAction)
+        throw std::runtime_error("actionOpen not found");
+    _openAction = openAction; 
 
-    QObject::connect(
-        graphicsView,
-        &QWidget::customContextMenuRequested,
-        [this, graphicsView](const QPoint& pos) {
-            showContextMenu(graphicsView->mapToGlobal(pos));
-        }
-    );
+    _sceneContextMenu.setWidget(graphicsView);
+    setupSceneContextMenu();
+    
 
     connectActions();
 }
@@ -61,7 +61,7 @@ void View::show()
 
 QGraphicsScene* View::scene()
 {
-    return _scene.get();
+    return &_scene;
 }
 
 void View::setActionCallback(std::function<void(ViewAction)> cb)
@@ -72,7 +72,7 @@ void View::setActionCallback(std::function<void(ViewAction)> cb)
 void View::connectActions()
 {
     QObject::connect(
-        _openAction.get(),
+        _openAction,
         &QAction::triggered,
         [this]() {
             if (_actionCb)
@@ -96,35 +96,22 @@ void View::fitImage()
         return;
 
     graphicsView->fitInView(
-        _scene->sceneRect(),
+        scene()->sceneRect(),
         Qt::KeepAspectRatio
     );
 }
 
 
-void View::showContextMenu(const QPoint& globalPos)
+void View::setupSceneContextMenu()
 {
-    QMenu menu;
+    _sceneContextMenu.addAction("Inversion", [this](){_actionCb(ViewAction::Inversion);});
+    _sceneContextMenu.addAction("Greyscale", [this](){_actionCb(ViewAction::Grayscale);});
+    _sceneContextMenu.addAction("Fit Image", [this](){_actionCb(ViewAction::FitImage);});
+    _sceneContextMenu.addAction("Undo", [this](){_actionCb(ViewAction::Undo);});
+    _sceneContextMenu.addAction("Redo", [this](){_actionCb(ViewAction::Redo);});
+}
 
-    QAction* inversion  = menu.addAction("Inversion");
-    QAction* greyscale = menu.addAction("Greyscale");
-    QAction* fit = menu.addAction("Fit Image");
-    QAction* undo = menu.addAction("Undo");
-    QAction* redo = menu.addAction("Redo");
-
-    QAction* selected = menu.exec(globalPos);
-
-    if (!selected)
-        return;
-
-    if (selected == inversion)
-        _actionCb(ViewAction::Inversion);
-    else if (selected == greyscale)
-        _actionCb(ViewAction::Grayscale);
-    else if (selected == fit)
-        _actionCb(ViewAction::FitImage);
-    else if (selected == undo)
-        _actionCb(ViewAction::Undo);
-    else if (selected == redo)
-        _actionCb(ViewAction::Redo);
+void View::bindModel(ObservableContainer<Image>& images)
+{
+    _treeWidget.bindContainer(images, [](const Image& img){return img.path();});
 }

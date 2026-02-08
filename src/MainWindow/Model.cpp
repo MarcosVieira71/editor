@@ -10,7 +10,7 @@ Model::Model()
 
 void Model::addImage(Image&& img)
 {
-    _container.push_back(std::move(img));
+    _container.add(std::move(img));
     _current = _container.size() - 1; //last index added
 }
 
@@ -69,4 +69,15 @@ std::optional<const Image*> Model::currentImage() const
 bool Model::isImageSelected()
 {
     return _current.has_value();
+}
+
+
+ObservableContainer<Image>& Model::images()
+{
+    return _container;
+}
+
+const ObservableContainer<Image>& Model::images() const
+{
+    return _container;
 }

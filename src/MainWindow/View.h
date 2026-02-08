@@ -6,8 +6,12 @@
 #include <QPixmap>
 #include <QPoint>
 
+#include <yarui/ui/TreeWidget.h>
+#include <yarui/ui/ContextMenu.h>
+
 #include <functional>
 
+class Image;
 enum class ViewAction {
     Open,
     Grayscale,
@@ -21,10 +25,13 @@ enum class ViewAction {
 class View
 {
 private:
-    std::unique_ptr<QWidget> _window;
-    std::unique_ptr<QGraphicsScene> _scene;
-    std::unique_ptr<QAction> _openAction;
-    void showContextMenu(const QPoint& globalPos);
+    QWidget* _window;
+    QGraphicsScene _scene;
+    QAction* _openAction;
+    
+    TreeWidget<Image> _treeWidget;
+    ContextMenu _sceneContextMenu;
+    void setupSceneContextMenu();
     void connectActions();
 
 public:
@@ -34,6 +41,7 @@ public:
     void fitImage();
     void show();
     void setImage(const QPixmap& pixmap);
+    void bindModel(ObservableContainer<Image>& images);
     std::function<void(ViewAction)> _actionCb;
 
     View();

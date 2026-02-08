@@ -1,9 +1,10 @@
 #include <QApplication>
 #include <QTimer>
 
-#include "Image.h"
+#include <core/Image.h>
+#include <infra/ThreadPool.h>
+
 #include "MainWindow/Presenter.h"
-#include <ThreadPool.h>
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +16,6 @@ int main(int argc, char *argv[])
     QObject::connect(&timer, &QTimer::timeout, [](){
         ThreadPool::getInstance().processMainThreadTasks();
     });
-    timer.start(16); // ~60 FPS, chama a cada 16ms
-
+    timer.start(16); // ~60 FPS
     return app.exec();
 }

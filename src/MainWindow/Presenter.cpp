@@ -3,16 +3,16 @@
 #include <QPixmap>
 #include <QFileDialog>
 
-#include <Image.h>
-#include <filters/grayscale.h>
-#include <filters/inversion.h>
+#include <core/Image.h>
+#include <core/filters/grayscale.h>
+#include <core/filters/inversion.h>
+#include <infra/ThreadPool.h>
 
 #include "View.h"
 #include "Model.h"
 #include "ToQImageAdapter.h"
 #include "Commands/FilterCommand.h"
 
-#include <ThreadPool.h>
 
 
 Presenter::Presenter() : _view(std::make_unique<View>()), _model(std::make_unique<Model>())
@@ -30,7 +30,8 @@ Presenter::Presenter() : _view(std::make_unique<View>()), _model(std::make_uniqu
 
 void Presenter::start()
 {
-   _view->show();
+    _view->show();
+    _view->bindModel(_model->images());
 } 
 
 Presenter::~Presenter() = default;
@@ -51,7 +52,6 @@ void Presenter::onOpenImage()
 
     auto pixmap = QPixmap::fromImage(toQImage(img));
     _model->addImage(std::move(img));
-
     _view->setImage(pixmap);
 }
 
