@@ -6,6 +6,7 @@
 #include <core/Image.h>
 #include <core/filters/grayscale.h>
 #include <core/filters/inversion.h>
+#include <core/filters/binarization.h>
 #include <infra/ThreadPool.h>
 #include <infra/TaskScheduler.h>
 
@@ -86,6 +87,20 @@ void Presenter::onInversion()
     );
 }
 
+
+void Presenter::onBinarization()
+{
+    TaskScheduler::schedule(
+        [this]() {
+            _model->execute(std::make_unique<FilterCommand>(binarization));
+        },
+        [this]() {
+            refresh();
+        }
+    );
+}
+
+
 void Presenter::onUndo()
 {
     TaskScheduler::schedule(
@@ -116,6 +131,7 @@ void Presenter::initActionMap()
         { ViewAction::Open,      [this]() { onOpenImage(); } },
         { ViewAction::Grayscale, [this]() { if(_model->isImageSelected()) onGrayscale(); } },
         { ViewAction::Inversion, [this]() { if(_model->isImageSelected()) onInversion(); } },
+        { ViewAction::Binarization, [this]() { if(_model->isImageSelected()) onBinarization(); } },
         { ViewAction::FitImage,  [this]() { _view->fitImage(); } },
         { ViewAction::Undo,      [this]() { onUndo(); } },
         { ViewAction::Redo,      [this]() { onRedo(); } }

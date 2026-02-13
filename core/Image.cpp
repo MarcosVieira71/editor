@@ -93,3 +93,8 @@ const unsigned char* Image::bytes() const
 {
     return reinterpret_cast<const unsigned char*>(_pixels.data());
 }
+
+const std::vector<RGBA>& Image::buffer() const
+{
+    return _pixels;    
+}

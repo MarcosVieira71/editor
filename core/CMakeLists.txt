@@ -2,6 +2,7 @@ add_library(core STATIC
     Image.cpp
     filters/grayscale.cpp
     filters/inversion.cpp
+    filters/binarization.cpp
 )
 
 find_package(OpenMP REQUIRED)

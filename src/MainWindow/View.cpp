@@ -88,6 +88,7 @@ void View::setupSceneContextMenu()
 {
     _sceneContextMenu.addAction("Inversion", [this](){_actionCb(ViewAction::Inversion);});
     _sceneContextMenu.addAction("Greyscale", [this](){_actionCb(ViewAction::Grayscale);});
+    _sceneContextMenu.addAction("Binarization", [this](){_actionCb(ViewAction::Binarization);});
     _sceneContextMenu.addAction("Fit Image", [this](){_actionCb(ViewAction::FitImage);});
     _sceneContextMenu.addAction("Undo", [this](){_actionCb(ViewAction::Undo);});
     _sceneContextMenu.addAction("Redo", [this](){_actionCb(ViewAction::Redo);});

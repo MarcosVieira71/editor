@@ -26,6 +26,7 @@ public:
     void start();
     void onInversion();
     void onGrayscale();
+    void onBinarization();
     void onUndo();
     void onRedo();
 

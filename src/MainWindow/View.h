@@ -16,6 +16,7 @@ enum class ViewAction {
     Open,
     Grayscale,
     Inversion,
+    Binarization,
     FitImage,
     Undo,
     Redo

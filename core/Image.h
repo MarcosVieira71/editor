@@ -29,7 +29,9 @@ class Image
         const int& channels() const;
         const unsigned char* bytes() const;
         const RGBA* data() const;
+        const std::vector<RGBA>& buffer() const;
         RGBA* data();
+
         Image clone() const;
         
 
