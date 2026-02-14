@@ -1,10 +1,10 @@
 #pragma once
 
-#include <functional>
-#include <optional>
 #include <vector>
+#include <optional>
+#include <functional>
 
-#include <yarui/reactive/Subscription.h>
+#include <yarui/reactive/Observable.h>
 
 template<typename T>
 struct ContainerEvent
@@ -21,96 +21,49 @@ struct ContainerEvent
     std::optional<std::reference_wrapper<const T>> item;
 };
 
-
 template<typename T>
-class ObservableContainer
+class ObservableContainer : public Observable<ContainerEvent<T>>
 {
-    using Observer = std::function<void(const ContainerEvent<T>&)>;
+public:
+    ObservableContainer() = default;
 
-    public:
+    ObservableContainer(const ObservableContainer&) = delete;
+    ObservableContainer& operator=(const ObservableContainer&) = delete;
 
-        ObservableContainer() = default;
+    ObservableContainer(ObservableContainer&&) = delete;
+    ObservableContainer& operator=(ObservableContainer&&) = delete;
 
-        ObservableContainer(const ObservableContainer&) = delete;
-        ObservableContainer& operator=(const ObservableContainer&) = delete;
+    ~ObservableContainer() = default;
 
-        ObservableContainer(ObservableContainer&&) = delete;
-        ObservableContainer& operator=(ObservableContainer&&) = delete;
+    void add(const T& item)
+    {
+        _container.push_back(item);
 
-        ~ObservableContainer()
-        {
-            _observers.clear();
-        }
+        ContainerEvent<T> ev{ ContainerEvent<T>::Type::Added,
+                              _container.size() - 1,
+                              std::cref(_container.back()) };
 
-        void add(const T& item)
-        {
-            _container.push_back(item);
-            notify({
-                ContainerEvent<T>::Type::Added,
-                _container.size() - 1,
-                std::cref(_container.back())
-            });
-        }
+        this->notify(ev); 
+    }
 
-        void remove(std::size_t index)
-        {
-            if (index >= _container.size())
-                return;
+    void remove(std::size_t index)
+    {
+        if (index >= _container.size()) return;
 
-            _container.erase(_container.begin() + index);
+        _container.erase(_container.begin() + index);
 
-            notify({
-                ContainerEvent<T>::Type::Removed,
-                index,
-                std::nullopt
-            });
-        }
+        ContainerEvent<T> ev{ ContainerEvent<T>::Type::Removed,
+                              index,
+                              std::nullopt };
 
-        Subscription subscribe(Observer obs)
-        {
-            const std::size_t id = _nextId++;
-            _observers.emplace_back(id, std::move(obs));
+        this->notify(ev);
+    }
 
-            auto unsubscribeFunc = [observers = &_observers, id]() {
-                if (!observers) return;
-                auto it = std::remove_if(
-                    observers->begin(),
-                    observers->end(),
-                    [id](auto& pair) { return pair.first == id; }
-                );
-                observers->erase(it, observers->end());
-            };
+    std::size_t size() const { return _container.size(); }
+    T& operator[](std::size_t i) { return _container[i]; }
+    const T& operator[](std::size_t i) const { return _container[i]; }
+    const std::vector<T>& items() const { return _container; }
 
-            return Subscription{std::move(unsubscribeFunc)};
-        }
-
-        std::size_t size()
-        {
-            return _container.size();
-        }
-
-        T& operator[](std::size_t i) {
-            return _container[i];
-        }
-
-        const T& operator[](std::size_t i) const {
-            return _container[i];
-        }
-
-        const std::vector<T>& items() const
-        {
-            return _container;
-        }
-
-    private:
-
-        void notify(const ContainerEvent<T>& ev)
-        {
-            for (auto& [id, obs] : _observers)
-                obs(ev);
-        }
-
-        std::size_t _nextId = 0;
-        std::vector<std::pair<std::size_t, Observer>> _observers;
-        std::vector<T> _container;       
+private:
+    std::vector<T> _container;
 };
