@@ -2,6 +2,9 @@
 
 #include <memory>
 #include <functional>
+#include <string>
+
+#include <yarui/reactive/ObservableMap.h>
 
 class View;
 class Model;
@@ -13,7 +16,7 @@ private:
     std::unique_ptr<View> _view;
     std::unique_ptr<Model> _model;
 
-    std::unordered_map<ViewAction, std::function<void()>> _actionMap;
+    ObservableMap<std::string, std::function<void()>> _actionMap;
     
     void onOpenImage();
     void refresh();

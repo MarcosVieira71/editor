@@ -9,6 +9,7 @@
 
 #include <core/Image.h>
 
+#include <yarui/reactive/ObservableMap.h>
 #include <yarui/ui/ContextMenu.h>
 #include <yarui/ui/UiWidget.h>
 
@@ -31,9 +32,6 @@ View::View()
     graphicsView->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
     graphicsView->setResizeAnchor(QGraphicsView::AnchorViewCenter);
     graphicsView->setRenderHint(QPainter::SmoothPixmapTransform);
-
-    setupSceneContextMenu();
-    connectActions();
 }
 
 void View::show()
@@ -46,22 +44,6 @@ QGraphicsScene* View::scene()
     return &_scene;
 }
 
-void View::setActionCallback(std::function<void(ViewAction)> cb)
-{
-    _actionCb = std::move(cb);
-}
-
-void View::connectActions()
-{
-    QObject::connect(
-        _openAction,
-        &QAction::triggered,
-        [this]() {
-            if (_actionCb)
-                _actionCb(ViewAction::Open);
-        }
-    );
-}
 
 void View::setImage(const QPixmap& pixmap)
 {
@@ -84,14 +66,9 @@ void View::fitImage()
 }
 
 
-void View::setupSceneContextMenu()
+void View::bindActionMap(ObservableMap<std::string, std::function<void()>>& map)
 {
-    _sceneContextMenu.addAction("Inversion", [this](){_actionCb(ViewAction::Inversion);});
-    _sceneContextMenu.addAction("Greyscale", [this](){_actionCb(ViewAction::Grayscale);});
-    _sceneContextMenu.addAction("Binarization", [this](){_actionCb(ViewAction::Binarization);});
-    _sceneContextMenu.addAction("Fit Image", [this](){_actionCb(ViewAction::FitImage);});
-    _sceneContextMenu.addAction("Undo", [this](){_actionCb(ViewAction::Undo);});
-    _sceneContextMenu.addAction("Redo", [this](){_actionCb(ViewAction::Redo);});
+    _sceneContextMenu.bindMap(map);
 }
 
 void View::bindModel(ObservableContainer<Image>& images)

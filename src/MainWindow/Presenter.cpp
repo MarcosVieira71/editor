@@ -20,20 +20,13 @@
 Presenter::Presenter() : _view(std::make_unique<View>()), _model(std::make_unique<Model>())
 {   
     initActionMap();
-    _view->setActionCallback(
-        [this](ViewAction action) {
-            auto it = _actionMap.find(action);
-            if (it != _actionMap.end())
-                it->second();
-        }
-    );
-
 }
 
 void Presenter::start()
 {
     _view->show();
     _view->bindModel(_model->images());
+    _view->bindActionMap(_actionMap);
 } 
 
 Presenter::~Presenter() {
@@ -127,15 +120,13 @@ void Presenter::onRedo()
 
 void Presenter::initActionMap()
 {
-    _actionMap = {
-        { ViewAction::Open,      [this]() { onOpenImage(); } },
-        { ViewAction::Grayscale, [this]() { if(_model->isImageSelected()) onGrayscale(); } },
-        { ViewAction::Inversion, [this]() { if(_model->isImageSelected()) onInversion(); } },
-        { ViewAction::Binarization, [this]() { if(_model->isImageSelected()) onBinarization(); } },
-        { ViewAction::FitImage,  [this]() { _view->fitImage(); } },
-        { ViewAction::Undo,      [this]() { onUndo(); } },
-        { ViewAction::Redo,      [this]() { onRedo(); } }
-    };
+    _actionMap.add("Open", [this]() { onOpenImage(); });
+    _actionMap.add("Grayscale", [this]() { if(_model->isImageSelected()) onGrayscale(); });
+    _actionMap.add("Inversion", [this]() { if(_model->isImageSelected()) onInversion(); });
+    _actionMap.add("Binarization", [this]() { if(_model->isImageSelected()) onBinarization(); });
+    _actionMap.add("Fit Image", [this]() { _view->fitImage(); });
+    _actionMap.add("Undo", [this]() { onUndo(); });
+    _actionMap.add("Redo", [this]() { onRedo(); });
 }
 
 void Presenter::refresh()

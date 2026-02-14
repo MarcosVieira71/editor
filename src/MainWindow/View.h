@@ -32,13 +32,10 @@ private:
     
     TreeWidget<Image> _treeWidget;
     ContextMenu _sceneContextMenu;
-    void setupSceneContextMenu();
-    void connectActions();
-
-public:
-
+    
+    public:
     QGraphicsScene* scene();
-    void setActionCallback(std::function<void(ViewAction)> cb);
+    void bindActionMap(ObservableMap<std::string, std::function<void()>>& map);
     void fitImage();
     void show();
     void setImage(const QPixmap& pixmap);
