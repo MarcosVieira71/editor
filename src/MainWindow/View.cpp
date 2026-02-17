@@ -16,7 +16,7 @@
 #include <stdexcept>
 View::View() 
     : _window(UiWidget("ui/MainWindow.ui"))
-    , _treeWidget(TreeWidget<Image>(_window->findChild<QTreeWidget*>("treeWidget")))
+    , _treeWidget(TreeWidget(_window->findChild<QTreeWidget*>("treeWidget")))
     , _scene(QGraphicsScene())
     , _sceneContextMenu(_window->findChild<QGraphicsView*>("graphicsView"))
     , _openAction(_window->findChild<QAction*>("actionOpen"))
@@ -32,6 +32,14 @@ View::View()
     graphicsView->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
     graphicsView->setResizeAnchor(QGraphicsView::AnchorViewCenter);
     graphicsView->setRenderHint(QPainter::SmoothPixmapTransform);
+
+    QObject::connect( _openAction,
+    &QAction::triggered,
+    [this]()
+    {
+        _openCb();
+    }
+);
 }
 
 void View::show()
@@ -44,6 +52,10 @@ QGraphicsScene* View::scene()
     return &_scene;
 }
 
+void View::setOpenCallback(std::function<void()>&& openCb)
+{
+    _openCb = std::move(openCb);
+}
 
 void View::setImage(const QPixmap& pixmap)
 {
@@ -73,5 +85,5 @@ void View::bindActionMap(ObservableMap<std::string, std::function<void()>>& map)
 
 void View::bindModel(ObservableContainer<Image>& images)
 {
-    _treeWidget.bindContainer(images, [](const Image& img){return img.path();});
+    _treeWidget.bindContainer<Image>(images, [](const Image& img){return img.path();});
 }

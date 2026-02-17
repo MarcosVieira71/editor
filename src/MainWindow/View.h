@@ -12,16 +12,6 @@
 #include <functional>
 
 class Image;
-enum class ViewAction {
-    Open,
-    Grayscale,
-    Inversion,
-    Binarization,
-    FitImage,
-    Undo,
-    Redo
-};
-
 
 class View
 {
@@ -29,18 +19,19 @@ private:
     QWidget* _window;
     QGraphicsScene _scene;
     QAction* _openAction;
+    std::function<void()> _openCb;
     
-    TreeWidget<Image> _treeWidget;
+    TreeWidget _treeWidget;
     ContextMenu _sceneContextMenu;
     
-    public:
+public:
     QGraphicsScene* scene();
     void bindActionMap(ObservableMap<std::string, std::function<void()>>& map);
     void fitImage();
     void show();
     void setImage(const QPixmap& pixmap);
     void bindModel(ObservableContainer<Image>& images);
-    std::function<void(ViewAction)> _actionCb;
+    void setOpenCallback(std::function<void()>&& openCb);
 
     View();
     ~View() = default;

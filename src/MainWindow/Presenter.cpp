@@ -4,9 +4,9 @@
 #include <QFileDialog>
 
 #include <core/Image.h>
-#include <core/filters/grayscale.h>
-#include <core/filters/inversion.h>
-#include <core/filters/binarization.h>
+#include <core/transformations/grayscale.h>
+#include <core/transformations/inversion.h>
+#include <core/transformations/binarization.h>
 #include <infra/ThreadPool.h>
 #include <infra/TaskScheduler.h>
 
@@ -120,7 +120,7 @@ void Presenter::onRedo()
 
 void Presenter::initActionMap()
 {
-    _actionMap.add("Open", [this]() { onOpenImage(); });
+    _view->setOpenCallback([this]() { onOpenImage(); });
     _actionMap.add("Grayscale", [this]() { if(_model->isImageSelected()) onGrayscale(); });
     _actionMap.add("Inversion", [this]() { if(_model->isImageSelected()) onInversion(); });
     _actionMap.add("Binarization", [this]() { if(_model->isImageSelected()) onBinarization(); });

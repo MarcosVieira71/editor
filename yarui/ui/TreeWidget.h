@@ -9,7 +9,6 @@
 #include <yarui/reactive/ObservableContainer.h>
 #include <yarui/reactive/Subscription.h>
 
-template<typename T>
 class TreeWidget
 {
     public:
@@ -24,6 +23,7 @@ class TreeWidget
         _subscription = {};
     }
 
+    template<typename T>
     void bindContainer(ObservableContainer<T>& container, std::function<std::string(const T&)> toText)
     {
         _widget->clear();
