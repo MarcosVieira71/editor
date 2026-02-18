@@ -17,6 +17,8 @@
 
 #include "ToQImageAdapter.h"
 
+#include "Model.h"
+
 #include <stdexcept>
 View::View() 
     : _window(UiWidget("ui/MainWindow.ui"))
@@ -88,9 +90,19 @@ void View::bindActionMap(ObservableMap<std::string, std::function<void()>>& map)
     _sceneContextMenu.bindMap(map);
 }
 
-void View::bindModel(ObservableContainer<Image>& images)
+void View::bindModel(Model& model)
 {
-    _treeWidget.bindContainer<Image>(images, [](const Image& img){return img.path();});
+    _treeWidget.bindContainer<Image>(model.images(), [](const Image& img){return img.path();});
+    _treeWidget.bindSelection(
+        model.selection(),
+        [&model](std::optional<size_t> idx) {
+            if (!idx)
+                model.clearSelection();
+            else
+                model.select(*idx);
+        }
+    );
+
 }
 
 std::optional<PathExtension> View::fileDialog(FileDialogMode mode, const std::string& title, const std::string& filters)

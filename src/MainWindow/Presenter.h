@@ -5,6 +5,7 @@
 #include <string>
 
 #include <yarui/reactive/ObservableMap.h>
+#include <yarui/reactive/Subscription.h>
 
 class View;
 class Model;
@@ -27,6 +28,9 @@ private:
     void onBinarization();
     void onUndo();
     void onRedo();
+
+    Subscription _selectionSubscription;
+
 public:
     Presenter();
     ~Presenter();

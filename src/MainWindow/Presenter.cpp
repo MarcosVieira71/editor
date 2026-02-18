@@ -22,8 +22,18 @@ Presenter::Presenter() : _view(std::make_unique<View>()), _model(std::make_uniqu
 void Presenter::start()
 {
     _view->show();
-    _view->bindModel(_model->images());
+    _view->bindModel(*_model);
     _view->bindActionMap(_actionMap);
+
+    _selectionSubscription = _model->selection().subscribe(
+        [this](const std::optional<size_t>& idx)
+            {
+                if (!idx)
+                    return;
+                refresh();
+            }
+        );
+
 } 
 
 Presenter::~Presenter() {
@@ -62,7 +72,7 @@ void Presenter::onSaveImage()
         [img = _model->currentImage(), path = result->first, extension = result->second](){
             if(!img) return 0;
             try{
-                ImageLoader::save(**img, path, extension);
+                ImageLoader::save(*img, path, extension);
                 return 1;
             }
             catch(...){
@@ -157,5 +167,5 @@ void Presenter::initActionMap()
 void Presenter::refresh()
 {
     if(auto img = _model->currentImage(); img.has_value())
-        _view->setImage(**img);
+        _view->setImage(*img);
 }

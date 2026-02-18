@@ -20,7 +20,9 @@ class TreeWidget
 
     ~TreeWidget()
     {
-        _subscription = {};
+        _containerSubscription = {};
+        _selectionSub = {};
+
     }
 
     template<typename T>
@@ -32,7 +34,7 @@ class TreeWidget
             addItem(QString::fromStdString(toText(item)));
         }
 
-        _subscription = container.subscribe(
+        _containerSubscription = container.subscribe(
             [widget = _widget, toText](const ContainerEvent<T>& ev)
             {
                 if (!widget) return; 
@@ -58,6 +60,52 @@ class TreeWidget
         );
     }
 
+    void bindSelection(
+        Observable<std::optional<size_t>>& currentIndex,
+        std::function<void(std::optional<size_t>)> setSelection)
+    {
+        _selectionSub = currentIndex.subscribe(
+            [widget = _widget](const std::optional<size_t>& index)
+            {
+                if (!widget) return;
+
+                if (!index) {
+                    widget->clearSelection();
+                    return;
+                }
+
+                auto* item = widget->topLevelItem(static_cast<int>(*index));
+                if (item)
+                    widget->setCurrentItem(item);
+            }
+        );
+
+        QObject::connect(
+            _widget,
+            &QTreeWidget::itemSelectionChanged,
+            _widget,
+            [this, setSelection]()
+            {
+                auto items = _widget->selectedItems();
+
+                if (items.empty()) {
+                    setSelection(std::nullopt);
+                    return;
+                }
+
+                auto* item = items.first();
+                int index = _widget->indexOfTopLevelItem(item);
+
+                if (index < 0)
+                    setSelection(std::nullopt);
+                else
+                    setSelection(static_cast<size_t>(index));
+            }
+        );
+
+    }
+
+
     private:
         void addItem(const QString& text) {
             auto* item = new QTreeWidgetItem(_widget);
@@ -65,5 +113,6 @@ class TreeWidget
         }
 
     QTreeWidget* _widget;
-    Subscription _subscription;
+    Subscription _containerSubscription;
+    Subscription _selectionSub;
 };

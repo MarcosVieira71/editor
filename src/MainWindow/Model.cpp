@@ -11,18 +11,24 @@ Model::Model()
 void Model::addImage(Image&& img)
 {
     _container.add(std::move(img));
-    _current = _container.size() - 1; //last index added
+    _current.set(_container.size() - 1); //last index added
 }
 
 bool Model::execute(std::unique_ptr<Command> cmd)
 {
-    if(!isImageSelected()) return false;
+    if (!isImageSelected())
+        return false;
 
-    cmd->apply(_container[*_current]);
+    size_t idx = *_current.get();
+
+    cmd->setTargetIndex(idx);
+    cmd->apply(_container[idx]);
+
     _undo.push_back(std::move(cmd));
     _redo.clear();
     return true;
 }
+
 
 bool Model::redo()
 {
@@ -32,14 +38,13 @@ bool Model::redo()
     auto cmd = std::move(_redo.back());
     _redo.pop_back();
 
-    //if this happens, something went very wrong
-    if(!_current.has_value()) throw std::runtime_error("Invalid state");
-    cmd->apply(_container[*_current]);
+    size_t idx = cmd->targetIndex();
+
+    cmd->apply(_container[idx]);
     _undo.push_back(std::move(cmd));
 
     return true;
 }
-
 
 bool Model::undo()
 {
@@ -49,28 +54,36 @@ bool Model::undo()
     auto cmd = std::move(_undo.back());
     _undo.pop_back();
 
-    //if this happens, something went very wrong
-    if(!_current.has_value()) throw std::runtime_error("Invalid state");
-    cmd->undo(_container[*_current]);
+    size_t idx = cmd->targetIndex();
+
+    cmd->undo(_container[idx]);
     _redo.push_back(std::move(cmd));
 
     return true;
 }
 
-std::optional<const Image*> Model::currentImage() const
+std::optional<std::reference_wrapper<const Image>> Model::currentImage() const
 {
-    if (!_current)
+    const auto& idx = _current.get();
+
+    if (!idx)
         return std::nullopt;
 
-    return &_container[*_current];
+    return std::cref(_container[*idx]);
 }
+
 
 
 bool Model::isImageSelected()
 {
-    return _current.has_value();
+    return _current.get().has_value();
 }
 
+
+ObservableValue<std::optional<size_t>>& Model::selection()
+{
+    return _current;
+};
 
 ObservableContainer<Image>& Model::images()
 {
@@ -80,4 +93,18 @@ ObservableContainer<Image>& Model::images()
 const ObservableContainer<Image>& Model::images() const
 {
     return _container;
+}
+
+void Model::select(size_t index) 
+{
+    if (index >= _container.size())
+        throw std::out_of_range("Invalid index");
+
+    _current.set(index);
+}
+
+
+void Model::clearSelection()
+{
+    _current.set(std::nullopt);
 }

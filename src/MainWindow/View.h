@@ -14,6 +14,7 @@
 #include <string>
 
 class Image;
+class Model;
 
 using PathExtension = std::pair<std::string, std::string>;
 enum class FileDialogMode{Open, Save};
@@ -35,7 +36,7 @@ public:
     void fitImage();
     void show();
     void setImage(const Image& pixmap);
-    void bindModel(ObservableContainer<Image>& images);
+    void bindModel(Model& model);
     void setOpenCallback(std::function<void()>&& openCb);
     std::optional<PathExtension> fileDialog(FileDialogMode mode, const std::string& title, const std::string& filters);
     void showInfoDialog(const std::string& title, const std::string& message);
