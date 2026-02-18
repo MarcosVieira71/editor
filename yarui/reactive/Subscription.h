@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 
 #include <yarui/reactive/ObservableBase.h>
 
@@ -8,54 +9,30 @@ class Subscription {
 public:
     Subscription() = default;
 
-    Subscription(ObservableBase* owner, std::size_t id)
-        : _owner(owner), _id(id)
+    Subscription(std::shared_ptr<ControlBlock> control, std::size_t id)
+        : _control(control)
+        , _id(id)
     {}
 
     Subscription(const Subscription&) = delete;
     Subscription& operator=(const Subscription&) = delete;
 
-    Subscription(Subscription&& other) noexcept
-        : _owner(other._owner), _id(other._id)
+    Subscription(Subscription&&) noexcept = default;
+    Subscription& operator=(Subscription&&) noexcept = default;
+
+    ~Subscription() 
     {
-        if (_owner)
-            _owner->replaceSubscription(&other, this);
-
-        other._owner = nullptr;
-    }
-
-    Subscription& operator=(Subscription&& other) noexcept {
-        if (this != &other) {
-            unsubscribe();
-
-            _owner = other._owner;
-            _id = other._id;
-
-            if (_owner)
-                _owner->replaceSubscription(&other, this);
-
-            other._owner = nullptr;
-        }
-        return *this;
-    }
-
-    ~Subscription() {
         unsubscribe();
     }
 
-    void invalidate() {
-        _owner = nullptr;
-    }
-
     void unsubscribe() {
-        if (_owner) {
-            _owner->unsubscribe(_id);
-            _owner->detach(this);
-            _owner = nullptr;
+        if (auto ctrl = _control.lock()) {
+            ctrl->owner->unsubscribe(_id);
         }
+        _control.reset();
     }
 
 private:
-    ObservableBase* _owner = nullptr;
+    std::weak_ptr<ControlBlock> _control;
     std::size_t _id = 0;
 };

@@ -18,12 +18,14 @@ class TreeWidget
     TreeWidget(QTreeWidget* widget) : _widget(widget)
     {}
 
-    ~TreeWidget()
-    {
-        _containerSubscription = {};
-        _selectionSub = {};
+    ~TreeWidget() = default;
+    
+    TreeWidget(const TreeWidget&) = delete;
+    TreeWidget& operator=(const TreeWidget&) = delete;
 
-    }
+    TreeWidget(TreeWidget&&) noexcept = default;
+    TreeWidget& operator=(TreeWidget&&) noexcept = default;
+
 
     template<typename T>
     void bindContainer(ObservableContainer<T>& container, std::function<std::string(const T&)> toText)

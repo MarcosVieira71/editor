@@ -36,10 +36,7 @@ void Presenter::start()
 
 } 
 
-Presenter::~Presenter() {
-    _view.reset();
-    _model.reset();
-}
+Presenter::~Presenter() = default;
 
 void Presenter::onOpenImage()
 {

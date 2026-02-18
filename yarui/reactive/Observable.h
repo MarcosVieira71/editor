@@ -5,6 +5,7 @@
 #include <functional>
 #include <algorithm>
 
+#include <yarui/reactive/ControlBlock.h>
 #include <yarui/reactive/ObservableBase.h>
 #include <yarui/reactive/Subscription.h>
 
@@ -20,35 +21,31 @@ class Observable : public ObservableBase
     };
 
 public:
-
-    Observable() = default;
-
-    ~Observable()
+    Observable()
+        : _control(std::make_shared<ControlBlock>())
     {
-        for (auto* sub : _subscriptions)
-            sub->invalidate();
+        _control->owner = this;
     }
+
+    ~Observable() = default;
 
     Subscription subscribe(Observer obs)
     {
         const std::size_t id = _nextId++;
         _observers.push_back({ id, std::move(obs) });
 
-        Subscription sub(this, id);
-        _subscriptions.push_back(&sub);
-        return sub;
+        return Subscription(_control, id);
     }
 
 protected:
-
     void notify(const Event& ev)
     {
-        for (auto& e : _observers)
+        auto observers = _observers;
+        for (auto& e : observers)
             e.observer(ev);
     }
 
 private:
-
     void unsubscribe(std::size_t id) override
     {
         auto it = std::remove_if(
@@ -60,33 +57,9 @@ private:
         _observers.erase(it, _observers.end());
     }
 
-    void detach(Subscription* sub) override
-    {
-        auto it = std::remove(
-            _subscriptions.begin(),
-            _subscriptions.end(),
-            sub
-        );
-
-        _subscriptions.erase(it, _subscriptions.end());
-    }
-
-    void replaceSubscription(Subscription* oldPtr,
-                             Subscription* newPtr) override
-    {
-        for (auto& ptr : _subscriptions)
-        {
-            if (ptr == oldPtr)
-            {
-                ptr = newPtr;
-                return;
-            }
-        }
-    }
-
 private:
-
     std::size_t _nextId = 0;
     std::vector<Entry> _observers;
-    std::vector<Subscription*> _subscriptions;
+
+    std::shared_ptr<ControlBlock> _control;
 };
