@@ -10,8 +10,13 @@
 #include <yarui/ui/ContextMenu.h>
 
 #include <functional>
+#include <optional>
+#include <string>
 
 class Image;
+
+using PathExtension = std::pair<std::string, std::string>;
+enum class FileDialogMode{Open, Save};
 
 class View
 {
@@ -32,6 +37,7 @@ public:
     void setImage(const QPixmap& pixmap);
     void bindModel(ObservableContainer<Image>& images);
     void setOpenCallback(std::function<void()>&& openCb);
+    std::optional<PathExtension> fileDialog(FileDialogMode mode, const std::string& title, const std::string& filters);
 
     View();
     ~View() = default;

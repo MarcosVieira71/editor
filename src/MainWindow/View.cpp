@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QUiLoader>
+#include <QFileDialog>
 #include <QGraphicsView>
 #include <QObject>
 #include <QMenu>
@@ -86,4 +87,55 @@ void View::bindActionMap(ObservableMap<std::string, std::function<void()>>& map)
 void View::bindModel(ObservableContainer<Image>& images)
 {
     _treeWidget.bindContainer<Image>(images, [](const Image& img){return img.path();});
+}
+
+std::optional<PathExtension> View::fileDialog(FileDialogMode mode, const std::string& title, const std::string& filters)
+{
+    QString selectedFilter;
+    QString qPath;
+    const auto qtitle = QString::fromUtf8(title.c_str());
+    const auto qfilter = QString::fromUtf8(filters.c_str());
+
+    if (mode == FileDialogMode::Open) {
+        qPath = QFileDialog::getOpenFileName(
+            nullptr,
+            qtitle,
+            "",
+            qfilter,
+            &selectedFilter
+        );
+    }
+    else { 
+        qPath = QFileDialog::getSaveFileName(
+            nullptr,
+            qtitle,
+            "",
+            qfilter,
+            &selectedFilter
+        );
+    }
+
+    if (qPath.isEmpty())
+        return std::nullopt;
+
+    QFileInfo info(qPath);
+    QString extension = info.suffix().toLower();
+
+    if (mode == FileDialogMode::Save && extension.isEmpty()) {
+
+        if (selectedFilter.contains("png", Qt::CaseInsensitive))
+            extension = "png";
+        else if (selectedFilter.contains("jpeg", Qt::CaseInsensitive))
+            extension = "jpg";
+        else if (selectedFilter.contains("bmp", Qt::CaseInsensitive))
+            extension = "bmp";
+
+        if (!extension.isEmpty())
+            qPath += "." + extension;
+    }
+    
+    return PathExtension{
+        qPath.toStdString(),
+        extension.toStdString()
+    };
 }
