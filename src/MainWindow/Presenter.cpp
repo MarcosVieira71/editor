@@ -58,6 +58,24 @@ void Presenter::onSaveImage()
     if (!result)
         return;
 
+    TaskScheduler::schedule<bool>(
+        [img = _model->currentImage(), path = result->first, extension = result->second](){
+            if(!img) return 0;
+            try{
+                ImageLoader::save(**img, path, extension);
+                return 1;
+            }
+            catch(...){
+                return 0;
+            }
+            
+        },
+        [this](bool&& ok){
+            if(ok) _view->showInfoDialog("Save", "Your image has been successfully saved");
+            else _view->showInfoDialog("Save", "Something went wrong while saving your image. You could try again now");
+        } 
+    );
+
 }
 
 
@@ -133,6 +151,7 @@ void Presenter::initActionMap()
     _actionMap.add("Fit Image", [this]() { _view->fitImage(); });
     _actionMap.add("Undo", [this]() { onUndo(); });
     _actionMap.add("Redo", [this]() { onRedo(); });
+    _actionMap.add("Save", [this]() { onSaveImage(); });
 }
 
 void Presenter::refresh()

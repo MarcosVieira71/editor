@@ -38,6 +38,7 @@ public:
     void bindModel(ObservableContainer<Image>& images);
     void setOpenCallback(std::function<void()>&& openCb);
     std::optional<PathExtension> fileDialog(FileDialogMode mode, const std::string& title, const std::string& filters);
+    void showInfoDialog(const std::string& title, const std::string& message);
 
     View();
     ~View() = default;

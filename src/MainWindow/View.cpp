@@ -7,12 +7,14 @@
 #include <QObject>
 #include <QMenu>
 #include <QAction>
+#include <QMessageBox>
 
 #include <core/Image.h>
 
 #include <yarui/reactive/ObservableMap.h>
 #include <yarui/ui/ContextMenu.h>
 #include <yarui/ui/UiWidget.h>
+
 #include "ToQImageAdapter.h"
 
 #include <stdexcept>
@@ -140,4 +142,14 @@ std::optional<PathExtension> View::fileDialog(FileDialogMode mode, const std::st
         qPath.toStdString(),
         extension.toStdString()
     };
+}
+
+void View::showInfoDialog(const std::string& title, const std::string& message)
+{
+    QMessageBox::information(
+        nullptr,
+        QString::fromUtf8(title.c_str()),
+        QString::fromUtf8(message.c_str()),
+        QMessageBox::Ok
+    );
 }
