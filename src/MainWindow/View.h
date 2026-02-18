@@ -34,7 +34,7 @@ public:
     void bindActionMap(ObservableMap<std::string, std::function<void()>>& map);
     void fitImage();
     void show();
-    void setImage(const QPixmap& pixmap);
+    void setImage(const Image& pixmap);
     void bindModel(ObservableContainer<Image>& images);
     void setOpenCallback(std::function<void()>&& openCb);
     std::optional<PathExtension> fileDialog(FileDialogMode mode, const std::string& title, const std::string& filters);

@@ -19,19 +19,19 @@ private:
     ObservableMap<std::string, std::function<void()>> _actionMap;
     
     void onOpenImage();
+    void onSaveImage();
     void refresh();
     void initActionMap();
-
-public:
-    Presenter();
-    ~Presenter();
-
-    void start();
     void onInversion();
     void onGrayscale();
     void onBinarization();
     void onUndo();
     void onRedo();
+public:
+    Presenter();
+    ~Presenter();
+
+    void start();
 
 };
 

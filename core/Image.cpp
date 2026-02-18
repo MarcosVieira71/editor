@@ -1,33 +1,15 @@
 #include "Image.h"
 
-#include <QImage>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
 
 #include <cstring>
 #include <stdexcept>
 #include <string>
 
-Image::Image(const char* path) : _path(path)
+Image::Image(int width, int height, int channels, const std::string& path)
+    : _width(width), _height(height), _channels(channels), _path(path)
 {
-    //load images with 4 channels for qt integration, we can change this later
-    auto data = stbi_load(path, &_width, &_height, &_channels, 4);
-    if(!data){
-        throw std::runtime_error("Error loading data");
-    }
-    _channels = 4;
-    _pixels.resize(_width * _height);
-    std::memcpy(_pixels.data(), data, _pixels.size() * sizeof(RGBA));
-
-    stbi_image_free(data);
-
-}
-
-Image::Image(std::string path) : Image(path.c_str())
-{
+    _pixels.resize(width * height);
 }
 
 Image Image::clone() const

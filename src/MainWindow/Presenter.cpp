@@ -1,18 +1,15 @@
 #include "Presenter.h"
 
-#include <QPixmap>
-#include <QFileDialog>
-
 #include <core/Image.h>
 #include <core/transformations/grayscale.h>
 #include <core/transformations/inversion.h>
 #include <core/transformations/binarization.h>
 #include <infra/ThreadPool.h>
+#include <infra/ImageLoader.h>
 #include <infra/TaskScheduler.h>
 
 #include "View.h"
 #include "Model.h"
-#include "ToQImageAdapter.h"
 #include "Commands/FilterCommand.h"
 
 
@@ -36,25 +33,34 @@ Presenter::~Presenter() {
 
 void Presenter::onOpenImage()
 {
-    QString path = QFileDialog::getOpenFileName(
-        nullptr,
-        "Open file",
-        QString(),
-        "Images (*.jpeg *.jpg *.png *.bmp)"
-    );
+    const auto result = _view->fileDialog(FileDialogMode::Open, "Open File", "Images (*.jpeg *.jpg *.png *.bmp)");
 
-    if (path.isEmpty())
+    if (!result.has_value())
         return;
 
     TaskScheduler::schedule<Image>(
-        [&path](){return Image(path.toStdString());},
+        [path = result->first](){return ImageLoader::load(path);},
         [this](Image&& img){
-            auto pixmap = QPixmap::fromImage(toQImage(img));
             _model->addImage(std::move(img));
-            _view->setImage(pixmap);
+            _view->setImage(img);
         } 
     );
 }
+
+void Presenter::onSaveImage()
+{
+    const auto result = _view->fileDialog(
+        FileDialogMode::Save,
+        "Save File",
+        "JPEG (*.jpg *.jpeg);;PNG (*.png);;BMP (*.bmp)"
+    );
+
+    if (!result)
+        return;
+
+}
+
+
 
 
 void Presenter::onGrayscale() {
@@ -132,5 +138,5 @@ void Presenter::initActionMap()
 void Presenter::refresh()
 {
     if(auto img = _model->currentImage(); img.has_value())
-        _view->setImage(QPixmap::fromImage(toQImage(**img)));
+        _view->setImage(**img);
 }

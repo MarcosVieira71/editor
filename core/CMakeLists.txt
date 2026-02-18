@@ -14,7 +14,6 @@ target_include_directories(core
 
 target_link_libraries(core
     PUBLIC
-        stb::stb
         Qt5::Widgets
         OpenMP::OpenMP_CXX
 )

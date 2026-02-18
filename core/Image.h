@@ -10,14 +10,11 @@ struct RGBA{
     unsigned char a;
 };
 
-class QImage;
-
 class Image
 {
     public:
         Image() = default;
-        Image(const char* path);
-        Image(std::string path);
+        Image(int width, int height, int channels, const std::string& path);
 
         ~Image();
         const RGBA& pixel(int x, int y) const;

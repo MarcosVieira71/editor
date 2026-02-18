@@ -13,6 +13,7 @@
 #include <yarui/reactive/ObservableMap.h>
 #include <yarui/ui/ContextMenu.h>
 #include <yarui/ui/UiWidget.h>
+#include "ToQImageAdapter.h"
 
 #include <stdexcept>
 View::View() 
@@ -58,8 +59,9 @@ void View::setOpenCallback(std::function<void()>&& openCb)
     _openCb = std::move(openCb);
 }
 
-void View::setImage(const QPixmap& pixmap)
+void View::setImage(const Image& img)
 {
+    auto pixmap = QPixmap::fromImage(toQImage(img));
     scene()->clear();
     scene()->addPixmap(pixmap);
     scene()->setSceneRect(pixmap.rect());
