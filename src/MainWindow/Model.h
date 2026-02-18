@@ -36,8 +36,8 @@ public:
     void select(size_t index);
     void clearSelection();
     bool execute(std::unique_ptr<Command> cmd);
-    bool redo();
-    bool undo();
+    std::optional<size_t> redo();
+    std::optional<size_t> undo();
 
 };
 

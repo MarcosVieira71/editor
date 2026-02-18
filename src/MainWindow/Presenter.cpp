@@ -85,9 +85,6 @@ void Presenter::onSaveImage()
 
 }
 
-
-
-
 void Presenter::onGrayscale() {
     TaskScheduler::schedule(
         [this]() { 
@@ -127,26 +124,33 @@ void Presenter::onBinarization()
 
 void Presenter::onUndo()
 {
-    TaskScheduler::schedule(
+    TaskScheduler::schedule<std::optional<std::size_t>>(
         [this]() {
-            _model->undo();
+            return _model->undo();
         },
-        [this]() {
-            refresh();
+        [this](std::optional<std::size_t> idx) {
+            if (idx){
+                _model->select(*idx);
+                refresh();
+            }
         }
     );
 }
 
 void Presenter::onRedo()
 {
-    TaskScheduler::schedule(
+    TaskScheduler::schedule<std::optional<std::size_t>>(
         [this]() {
-            _model->redo();
+           return _model->redo();
         },
-        [this]() {
-            refresh();
+        [this](std::optional<std::size_t> idx) {
+            if (idx){
+                _model->select(*idx);
+                refresh();
+
+            }
         }
-    );
+    );  
 }
 
 void Presenter::initActionMap()

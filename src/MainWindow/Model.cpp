@@ -30,37 +30,38 @@ bool Model::execute(std::unique_ptr<Command> cmd)
 }
 
 
-bool Model::redo()
+std::optional<size_t> Model::redo()
 {
     if (_redo.empty())
-        return false;
+        return std::nullopt;
 
     auto cmd = std::move(_redo.back());
     _redo.pop_back();
 
-    size_t idx = cmd->targetIndex();
+    std::size_t idx = cmd->targetIndex();
 
     cmd->apply(_container[idx]);
     _undo.push_back(std::move(cmd));
 
-    return true;
+    return idx;
 }
 
-bool Model::undo()
+std::optional<size_t> Model::undo()
 {
     if (_undo.empty())
-        return false;
+        return std::nullopt;
 
     auto cmd = std::move(_undo.back());
     _undo.pop_back();
 
-    size_t idx = cmd->targetIndex();
+    std::size_t idx = cmd->targetIndex();
 
     cmd->undo(_container[idx]);
     _redo.push_back(std::move(cmd));
 
-    return true;
+    return idx;
 }
+
 
 std::optional<std::reference_wrapper<const Image>> Model::currentImage() const
 {
@@ -99,7 +100,7 @@ void Model::select(size_t index)
 {
     if (index >= _container.size())
         throw std::out_of_range("Invalid index");
-
+        
     _current.set(index);
 }
 
