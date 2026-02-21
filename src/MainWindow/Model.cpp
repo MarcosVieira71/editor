@@ -100,6 +100,9 @@ void Model::select(size_t index)
 {
     if (index >= _container.size())
         throw std::out_of_range("Invalid index");
+
+    if(_current.get() == index)
+        return;
         
     _current.set(index);
 }
@@ -107,5 +110,8 @@ void Model::select(size_t index)
 
 void Model::clearSelection()
 {
+    if (!_current.get().has_value())
+        return;
+
     _current.set(std::nullopt);
 }

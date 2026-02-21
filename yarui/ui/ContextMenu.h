@@ -11,12 +11,14 @@
 #include <yarui/reactive/ObservableMap.h>
 #include <yarui/reactive/Subscription.h>
 
-class ContextMenu
+#include <yarui/ui/ReactiveWidget.h>
+
+class ContextMenu : public ReactiveWidget
 {
 public:
     ContextMenu() = default;
 
-    explicit ContextMenu(QWidget* widget)
+    explicit ContextMenu(QWidget* widget) : ReactiveWidget(&_menu)
     {
         setWidget(widget);
     }
@@ -59,6 +61,7 @@ public:
             _widget,
             [this](const QPoint& pos)
             {
+                if(!_isEnabled) return;
                 _menu.exec(_widget->mapToGlobal(pos));
             }
         );

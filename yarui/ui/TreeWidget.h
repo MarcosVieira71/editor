@@ -7,15 +7,17 @@
 #include <QTreeWidget>
 
 #include <yarui/reactive/ObservableContainer.h>
+#include <yarui/reactive/ObservableValue.h>
 #include <yarui/reactive/Subscription.h>
+#include <yarui/ui/ReactiveWidget.h>
 
-class TreeWidget
+class TreeWidget : public ReactiveWidget
 {
     public:
 
     TreeWidget() = default;
 
-    TreeWidget(QTreeWidget* widget) : _widget(widget)
+    TreeWidget(QTreeWidget* widget) : ReactiveWidget(widget), _widget(widget)
     {}
 
     ~TreeWidget() = default;
@@ -63,7 +65,7 @@ class TreeWidget
     }
 
     void bindSelection(
-        Observable<std::optional<size_t>>& currentIndex,
+        ObservableValue<std::optional<size_t>>& currentIndex,
         std::function<void(std::optional<size_t>)> setSelection)
     {
         _selectionSub = currentIndex.subscribe(

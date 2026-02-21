@@ -12,24 +12,20 @@
 template<typename Event>
 class Observable : public ObservableBase
 {
+    
+public:
     using Observer = std::function<void(const Event&)>;
 
-    struct Entry
-    {
-        std::size_t id;
-        Observer observer;
-    };
 
-public:
     Observable()
-        : _control(std::make_shared<ControlBlock>())
+    : _control(std::make_shared<ControlBlock>())
     {
         _control->owner = this;
     }
 
     ~Observable() = default;
 
-    Subscription subscribe(Observer obs)
+    virtual Subscription subscribe(Observer obs)
     {
         const std::size_t id = _nextId++;
         _observers.push_back({ id, std::move(obs) });
@@ -46,6 +42,12 @@ protected:
     }
 
 private:
+    struct Entry
+    {
+        std::size_t id;
+        Observer observer;
+    };
+    
     void unsubscribe(std::size_t id) override
     {
         auto it = std::remove_if(

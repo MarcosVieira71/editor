@@ -12,6 +12,7 @@
 #include <core/Image.h>
 
 #include <yarui/reactive/ObservableMap.h>
+
 #include <yarui/ui/ContextMenu.h>
 #include <yarui/ui/UiWidget.h>
 
@@ -102,7 +103,8 @@ void View::bindModel(Model& model)
                 model.select(*idx);
         }
     );
-
+    _sceneContextMenu.enable(model.selection().view_as<bool>([](const auto& s){
+        return s.has_value();}));
 }
 
 std::optional<PathExtension> View::fileDialog(FileDialogMode mode, const std::string& title, const std::string& filters)
