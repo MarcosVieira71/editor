@@ -34,13 +34,20 @@ public:
 
     ~ObservableMap() = default;
 
-    void add(const K& key, const V& value)
+    template<typename KK, typename VV>
+    void add(KK&& key, VV&& value)
     {
-        _container[key] = value;
+        auto [it, inserted] =
+            _container.insert_or_assign(
+                std::forward<KK>(key),
+                std::forward<VV>(value)
+            );
 
-        MapEvent<K, V> ev{ MapEvent<K, V>::Type::Added,
-                           key,
-                           std::cref(_container.at(key)) };
+        MapEvent<K, V> ev{
+            MapEvent<K, V>::Type::Added,
+            it->first,
+            std::cref(it->second)
+        };
 
         this->notify(ev);
     }

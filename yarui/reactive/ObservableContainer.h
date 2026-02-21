@@ -35,9 +35,10 @@ public:
 
     ~ObservableContainer() = default;
 
-    void add(const T& item)
+    template<typename TT>
+    void add(TT&& item)
     {
-        _container.push_back(item);
+        _container.push_back(std::forward<T>(item));
 
         ContainerEvent<T> ev{ ContainerEvent<T>::Type::Added,
                               _container.size() - 1,
