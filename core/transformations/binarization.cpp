@@ -1,5 +1,5 @@
 
-#include "core/Image.h"
+#include "core/ImageData.h"
 
 #include <cmath>
 #include <vector>
@@ -60,11 +60,11 @@ int otsu_method(const std::vector<RGBA>& buffer)
 }
 
 
-Image binarization(const Image& input)
+ImageData binarization(const ImageData& input)
 {
     auto threshold = otsu_method(input.buffer());
 
-    Image out = input.clone();
+    ImageData out = input.clone();
 
     const auto* src = input.data();
     auto* dst = out.data();

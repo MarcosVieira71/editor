@@ -1,5 +1,5 @@
 #pragma once
 
-#include "core/Image.h"
+#include "core/ImageData.h"
 
-Image grayscale(const Image& input);
+ImageData grayscale(const ImageData& input);

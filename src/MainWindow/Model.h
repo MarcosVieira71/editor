@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/ImageData.h>
 #include <core/Image.h>
 #include <yarui/reactive/ObservableContainer.h>
 #include <yarui/reactive/ObservableValue.h>
@@ -7,6 +8,8 @@
 #include <vector>
 #include <memory>
 #include <optional>
+#include <map>
+#include <string>
 
 class Command;
 
@@ -19,6 +22,8 @@ private:
    std::vector<std::unique_ptr<Command>> _undo;
    std::vector<std::unique_ptr<Command>> _redo;
 
+   std::map<const std::string,int> _filenameCount;
+
 public:
 
     ObservableValue<std::optional<size_t>>& selection();
@@ -27,11 +32,12 @@ public:
     const ObservableContainer<Image>& images() const;
 
     void addImage(Image&& img);
+    std::string generateUniqueName(const std::string& base);
 
     Model();
     ~Model() = default;
 
-    std::optional<std::reference_wrapper<const Image>>currentImage() const;
+    std::optional<std::reference_wrapper<const ImageData>>currentImage() const;
     bool isImageSelected();
     void select(size_t index);
     void clearSelection();

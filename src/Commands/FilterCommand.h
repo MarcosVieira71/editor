@@ -1,24 +1,24 @@
 #pragma once
 #include "Command.h"
 
-#include <core/Image.h>
+#include <core/ImageData.h>
 
 #include <functional>  
 
 class FilterCommand : public Command {
-    Image before;
-    std::function<Image(const Image&)> filter;
+    ImageData before;
+    std::function<ImageData(const ImageData&)> filter;
 
 public:
-    explicit FilterCommand(std::function<Image(const Image&)> f)
+    explicit FilterCommand(std::function<ImageData(const ImageData&)> f)
         : filter(std::move(f)) {}
 
-    void apply(Image& img) override {
+    void apply(ImageData& img) override {
         before = img.clone();
         img = filter(img);
     }
 
-    void undo(Image& img) override {
+    void undo(ImageData& img) override {
         img = before;
     }
 };

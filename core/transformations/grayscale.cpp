@@ -1,8 +1,8 @@
 #include "grayscale.h"
 
-Image grayscale(const Image& input)
+ImageData grayscale(const ImageData& input)
 {
-    Image out = input.clone();
+    ImageData out = input.clone();
 
     const auto* src = input.data();
     auto* dst = out.data();

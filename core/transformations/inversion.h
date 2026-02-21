@@ -1,5 +1,5 @@
 #pragma once
 
-#include "core/Image.h"
+#include "core/ImageData.h"
 
-Image inversion(const Image& input);
+ImageData inversion(const ImageData& input);

@@ -1,8 +1,8 @@
 #include "inversion.h"
 
-Image inversion(const Image& input)
+ImageData inversion(const ImageData& input)
 {
-    Image out = input.clone();
+    ImageData out = input.clone();
 
     auto* src = input.data();
     auto* dst = out.data();

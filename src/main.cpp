@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QTimer>
 
-#include <core/Image.h>
+#include <core/ImageData.h>
 #include <infra/ThreadPool.h>
 
 #include "MainWindow/Presenter.h"

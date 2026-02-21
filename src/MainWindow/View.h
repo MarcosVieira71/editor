@@ -13,7 +13,7 @@
 #include <optional>
 #include <string>
 
-class Image;
+class ImageData;
 class Model;
 
 using PathExtension = std::pair<std::string, std::string>;
@@ -35,7 +35,7 @@ public:
     void bindActionMap(ObservableMap<std::string, std::function<void()>>& map);
     void fitImage();
     void show();
-    void setImage(const Image& pixmap);
+    void setImage(const ImageData& pixmap);
     void bindModel(Model& model);
     void setOpenCallback(std::function<void()>&& openCb);
     std::optional<PathExtension> fileDialog(FileDialogMode mode, const std::string& title, const std::string& filters);

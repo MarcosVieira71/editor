@@ -1,4 +1,5 @@
 add_library(core STATIC
+    ImageData.cpp
     Image.cpp
     transformations/grayscale.cpp
     transformations/inversion.cpp

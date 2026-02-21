@@ -14,6 +14,15 @@ void Model::addImage(Image&& img)
     _current.set(_container.size() - 1); //last index added
 }
 
+std::string Model::generateUniqueName(const std::string& base)
+{
+    int count = _filenameCount[base]++;
+    std::string finalName = base;
+    if (count > 0) finalName += "_(" + std::to_string(count) + ")";
+
+    return finalName;
+}
+
 bool Model::execute(std::unique_ptr<Command> cmd)
 {
     if (!isImageSelected())
@@ -22,7 +31,7 @@ bool Model::execute(std::unique_ptr<Command> cmd)
     size_t idx = *_current.get();
 
     cmd->setTargetIndex(idx);
-    cmd->apply(_container[idx]);
+    cmd->apply(_container[idx].image_data());
 
     _undo.push_back(std::move(cmd));
     _redo.clear();
@@ -40,7 +49,7 @@ std::optional<size_t> Model::redo()
 
     std::size_t idx = cmd->targetIndex();
 
-    cmd->apply(_container[idx]);
+    cmd->apply(_container[idx].image_data());
     _undo.push_back(std::move(cmd));
 
     return idx;
@@ -56,21 +65,21 @@ std::optional<size_t> Model::undo()
 
     std::size_t idx = cmd->targetIndex();
 
-    cmd->undo(_container[idx]);
+    cmd->undo(_container[idx].image_data());
     _redo.push_back(std::move(cmd));
 
     return idx;
 }
 
 
-std::optional<std::reference_wrapper<const Image>> Model::currentImage() const
+std::optional<std::reference_wrapper<const ImageData>> Model::currentImage() const
 {
     const auto& idx = _current.get();
 
     if (!idx)
         return std::nullopt;
 
-    return std::cref(_container[*idx]);
+    return std::cref(_container[*idx].image_data());
 }
 
 

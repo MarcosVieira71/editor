@@ -1,12 +1,14 @@
 #include "Presenter.h"
 
-#include <core/Image.h>
+#include <core/ImageData.h>
 #include <core/transformations/grayscale.h>
 #include <core/transformations/inversion.h>
 #include <core/transformations/binarization.h>
 #include <infra/ThreadPool.h>
 #include <infra/ImageLoader.h>
 #include <infra/TaskScheduler.h>
+
+#include <filesystem>
 
 #include "View.h"
 #include "Model.h"
@@ -45,11 +47,11 @@ void Presenter::onOpenImage()
     if (!result.has_value())
         return;
 
-    TaskScheduler::schedule<Image>(
+    TaskScheduler::schedule<ImageData>(
         [path = result->first](){return ImageLoader::load(path);},
-        [this](Image&& img){
-            _model->addImage(std::move(img));
-            _view->setImage(img);
+        [this](ImageData&& img){
+            auto uniqueName = _model->generateUniqueName(std::filesystem::path(img.path()).filename().string());
+            _model->addImage(Image(std::move(uniqueName), std::move(img)));
         } 
     );
 }
@@ -159,7 +161,7 @@ void Presenter::initActionMap()
     _actionMap.add("Grayscale", [this]() { if(_model->isImageSelected()) onGrayscale(); });
     _actionMap.add("Inversion", [this]() { if(_model->isImageSelected()) onInversion(); });
     _actionMap.add("Binarization", [this]() { if(_model->isImageSelected()) onBinarization(); });
-    _actionMap.add("Fit Image", [this]() { _view->fitImage(); });
+    _actionMap.add("Fit ImageData", [this]() { _view->fitImage(); });
     _actionMap.add("Undo", [this]() { onUndo(); });
     _actionMap.add("Redo", [this]() { onRedo(); });
     _actionMap.add("Save", [this]() { onSaveImage(); });

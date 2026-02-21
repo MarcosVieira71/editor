@@ -1,5 +1,5 @@
 #pragma once
 
-#include "core/Image.h"
+#include "core/ImageData.h"
 
-Image binarization(const Image& input);
+ImageData binarization(const ImageData& input);
