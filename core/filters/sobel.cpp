@@ -25,15 +25,25 @@ ImageData sobel(const ImageData& input)
         { 1,  2,  1}
     };
 
-    for (int y = 1; y < h - 1; y++) {
-        for (int x = 1; x < w - 1; x++) {
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
 
             int sumX = 0;
             int sumY = 0;
 
             for (int ky = -1; ky <= 1; ky++) {
                 for (int kx = -1; kx <= 1; kx++) {
-                    const RGBA& p = input.pixel(x + kx, y + ky);
+                    int nx = x + kx;
+                    int ny = y + ky;
+
+                    //padding if out of borders
+                    if (nx < 0) nx = 0;
+                    if (nx >= w) nx = w - 1;
+                    if (ny < 0) ny = 0;
+                    if (ny >= h) ny = h - 1;
+
+                    const RGBA& p = input.pixel(nx, ny);
+
                     int gray = static_cast<int>(to_lum(p));
 
                     sumX += gray * sX[ky + 1][kx + 1];
