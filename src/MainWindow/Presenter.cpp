@@ -1,6 +1,7 @@
 #include "Presenter.h"
 
 #include <core/ImageData.h>
+#include <core/filters/sobel.h>
 #include <core/transformations/grayscale.h>
 #include <core/transformations/inversion.h>
 #include <core/transformations/binarization.h>
@@ -129,6 +130,17 @@ void Presenter::onBinarization()
     );
 }
 
+void Presenter::onSobel()
+{
+    TaskScheduler::schedule(
+        [this]() {
+            _model->execute(std::make_unique<FilterCommand>(sobel));
+        },
+        [this]() {
+            refresh();
+        }
+    );
+}
 
 void Presenter::onUndo()
 {
@@ -168,6 +180,7 @@ void Presenter::initActionMap()
     _sceneActionMap.add("Inversion", [this]() { if(_model->isImageSelected()) onInversion(); });
     _sceneActionMap.add("Binarization", [this]() { if(_model->isImageSelected()) onBinarization(); });
     _sceneActionMap.add("Fit Image", [this]() { _view->fitImage(); });
+    _sceneActionMap.add("Sobel", [this]() { if(_model->isImageSelected()) onSobel();});
     _sceneActionMap.add("Undo", [this]() { onUndo(); });
     _sceneActionMap.add("Redo", [this]() { onRedo(); });
 

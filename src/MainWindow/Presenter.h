@@ -22,6 +22,8 @@ private:
     
     void onOpenImage();
     void onSaveImage();
+    void onSobel();
+
     void onRemoveImage(std::size_t id);
     void refresh();
     void initActionMap();

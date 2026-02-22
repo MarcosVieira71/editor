@@ -1,14 +1,9 @@
 #pragma once
 
+#include <core/RGBA.h>
+
 #include <string>
 #include <vector>
-
-struct RGBA{
-    unsigned char r;
-    unsigned char g;
-    unsigned char b;
-    unsigned char a;
-};
 
 class ImageData
 {

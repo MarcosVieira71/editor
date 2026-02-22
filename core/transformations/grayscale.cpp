@@ -1,4 +1,6 @@
-#include "grayscale.h"
+#include "core/transformations/grayscale.h"
+
+#include "core/utils/to_lum.h"
 
 ImageData grayscale(const ImageData& input)
 {
@@ -9,10 +11,7 @@ ImageData grayscale(const ImageData& input)
     int total = input.width() * input.height();
 
     for (int i = 0; i < total; i++) {
-        unsigned char gray =
-            0.22f * src[i].r +
-            0.72f * src[i].g +
-            0.07f * src[i].b;
+        unsigned char gray = static_cast<unsigned char>(to_lum(src[i]));
 
         dst[i].r = gray;
         dst[i].g = gray;

@@ -4,6 +4,7 @@ add_library(core STATIC
     transformations/grayscale.cpp
     transformations/inversion.cpp
     transformations/binarization.cpp
+    filters/sobel.cpp
 )
 
 find_package(OpenMP REQUIRED)

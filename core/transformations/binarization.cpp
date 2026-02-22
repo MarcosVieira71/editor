@@ -1,5 +1,6 @@
 
 #include "core/ImageData.h"
+#include "core/utils/to_lum.h"
 
 #include <cmath>
 #include <vector>
@@ -9,9 +10,9 @@ int otsu_method(const std::vector<RGBA>& buffer)
 {
     std::vector<int> hist(256, 0.0);
 
-    for(const auto rgba : buffer)
+    for(const auto& rgba : buffer)
     {
-        auto lum = 0.299 * rgba.r + rgba.g * 0.587 + rgba.b * 0.114;
+        auto lum = to_lum(rgba);
         hist[static_cast<int>(std::round(lum))]++;
     }
 
