@@ -15,6 +15,7 @@
 
 class ImageData;
 class Model;
+class QGraphicsView;
 
 using PathExtension = std::pair<std::string, std::string>;
 enum class FileDialogMode{Open, Save};
@@ -24,6 +25,7 @@ class View
 private:
     QWidget* _window;
     QGraphicsScene _scene;
+    QGraphicsView* _graphicsView;
     QAction* _openAction;
     std::function<void()> _openCb;
     

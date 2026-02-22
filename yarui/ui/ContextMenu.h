@@ -62,6 +62,15 @@ public:
             [this](const QPoint& pos)
             {
                 if(!_isEnabled) return;
+
+
+                if (auto* tree = qobject_cast<QTreeWidget*>(_widget))
+                {
+                    QTreeWidgetItem* item = tree->itemAt(pos);
+                    if (!item)
+                        return; 
+                }
+
                 _menu.exec(_widget->mapToGlobal(pos));
             }
         );

@@ -28,17 +28,15 @@ View::View()
     , _sceneContextMenu(_window->findChild<QGraphicsView*>("graphicsView"))
     , _imageTreeContextMenu(_treeWidget.widget())
     , _openAction(_window->findChild<QAction*>("actionOpen"))
+    , _graphicsView(_window->findChild<QGraphicsView*>("graphicsView"))
 {
-    auto graphicsView = _window->findChild<QGraphicsView*>("graphicsView");
-    if (!graphicsView)
-        throw std::runtime_error("graphicsView not found in UI");
-
-    graphicsView->setScene(&_scene);
-    graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    graphicsView->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
-    graphicsView->setResizeAnchor(QGraphicsView::AnchorViewCenter);
-    graphicsView->setRenderHint(QPainter::SmoothPixmapTransform);
+    
+    _graphicsView->setScene(&_scene);
+    _graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    _graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    _graphicsView->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+    _graphicsView->setResizeAnchor(QGraphicsView::AnchorViewCenter);
+    _graphicsView->setRenderHint(QPainter::SmoothPixmapTransform);
 
     QObject::connect( _openAction,
     &QAction::triggered,
@@ -80,11 +78,8 @@ void View::clear()
 
 void View::fitImage()
 {
-    auto graphicsView = _window->findChild<QGraphicsView*>("graphicsView");
-    if (!graphicsView)
-        return;
 
-    graphicsView->fitInView(
+    _graphicsView->fitInView(
         scene()->sceneRect(),
         Qt::KeepAspectRatio
     );

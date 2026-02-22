@@ -22,7 +22,7 @@ private:
     
     void onOpenImage();
     void onSaveImage();
-    void onRemoveImage(std::size_t idx);
+    void onRemoveImage(std::size_t id);
     void refresh();
     void initActionMap();
     void onInversion();

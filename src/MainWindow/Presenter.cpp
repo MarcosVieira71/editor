@@ -27,16 +27,14 @@ void Presenter::start()
     _view->bindTreeActionMap(_treeActionMap);
 
     _selectionSubscription = _model->selection().subscribe(
-        [this](const std::optional<size_t>& idx)
+        [this](const std::optional<size_t>& id)
             {
                 refresh();   
-                if (!idx) {
-                    _treeActionMap.remove("Save");
+                if (!id) {
                     _treeActionMap.remove("Remove");
                     return;
                 }
-                _treeActionMap.add("Save", [this]() { onSaveImage(); });
-                _treeActionMap.add("Remove", [i=*idx, this](){ onRemoveImage(i); });
+                _treeActionMap.add("Remove", [i=*id, this](){ onRemoveImage(i); });
             }
         );
 
@@ -90,9 +88,9 @@ void Presenter::onSaveImage()
 
 }
 
-void Presenter::onRemoveImage(std::size_t idx)
+void Presenter::onRemoveImage(std::size_t id)
 {
-    _model->removeImage(idx);
+    _model->removeImage(id);
 }
 
 void Presenter::onGrayscale() {
@@ -173,7 +171,7 @@ void Presenter::initActionMap()
     _sceneActionMap.add("Undo", [this]() { onUndo(); });
     _sceneActionMap.add("Redo", [this]() { onRedo(); });
 
-    _treeActionMap.add("Open", [this]() { onOpenImage();});
+    _treeActionMap.add("Save", [this]() { onSaveImage(); });
 }
 
 void Presenter::refresh()
