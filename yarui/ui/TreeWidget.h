@@ -29,58 +29,85 @@ class TreeWidget : public ReactiveWidget
     TreeWidget& operator=(TreeWidget&&) noexcept = default;
 
 
-    template<typename T>
-    void bindContainer(ObservableContainer<T>& container, std::function<std::string(const T&)> toText)
+    template<typename T, typename Id>
+    void bindContainer(
+        ObservableContainer<T>& container,
+        std::function<std::string(const T&)> toText,
+        std::function<Id(const T&)> toId
+    )
     {
         _widget->clear();
 
-        for (const auto& item : container.items()) {
-            addItem(QString::fromStdString(toText(item)));
+        for (const auto& item : container.items())
+        {
+            auto* treeItem = new QTreeWidgetItem(_widget);
+            treeItem->setText(0, QString::fromStdString(toText(item)));
+
+            QVariant v;
+            v.setValue(toId(item)); 
+            treeItem->setData(0, Qt::UserRole, v);
         }
 
         _containerSubscription = container.subscribe(
-            [widget = _widget, toText](const ContainerEvent<T>& ev)
+            [widget = _widget, toText, toId](const ContainerEvent<T>& ev)
             {
-                if (!widget) return; 
+                if (!widget) return;
 
                 switch (ev.type)
                 {
                     case ContainerEvent<T>::Type::Added:
-                        if(!ev.item) throw std::runtime_error("Invalid optional");
-                        {
-                            auto* item = new QTreeWidgetItem(widget);
-                            item->setText(0, QString::fromStdString(toText(*ev.item)));
-                        }
-                        break;
+                    {
+                        auto* item = new QTreeWidgetItem(widget);
+                        item->setText(0, QString::fromStdString(toText(*ev.item)));
+
+                        QVariant v;
+                        v.setValue(toId(*ev.item));
+                        item->setData(0, Qt::UserRole, v);
+                    }
+                    break;
 
                     case ContainerEvent<T>::Type::Removed:
+                    {
                         delete widget->takeTopLevelItem(static_cast<int>(ev.index));
-                        break;
+                    }
+                    break;
 
                     default:
-                        break;
+                    break;
                 }
             }
         );
     }
 
+    template<typename Id>
     void bindSelection(
-        ObservableValue<std::optional<size_t>>& currentIndex,
-        std::function<void(std::optional<size_t>)> setSelection)
+        ObservableValue<std::optional<Id>>& currentId,
+        std::function<void(std::optional<Id>)> setSelection)
     {
-        _selectionSub = currentIndex.subscribe(
-            [widget = _widget](const std::optional<size_t>& index)
+        _selectionSub = currentId.subscribe(
+            [widget = _widget](const std::optional<Id>& id)
             {
                 if (!widget) return;
 
-                if (!index) {
+                if (!id)
+                {
                     widget->clearSelection();
                     return;
                 }
 
-                auto* item = widget->topLevelItem(static_cast<int>(*index));
-                if (item)
-                    widget->setCurrentItem(item);
+                for (int i = 0; i < widget->topLevelItemCount(); ++i)
+                {
+                    auto* item = widget->topLevelItem(i);
+                    auto value = item->data(0, Qt::UserRole).value<Id>();
+
+                    if (value == *id)
+                    {
+                        widget->setCurrentItem(item);
+                        return;
+                    }
+                }
+
+                widget->clearSelection();
             }
         );
 
@@ -92,23 +119,22 @@ class TreeWidget : public ReactiveWidget
             {
                 auto items = _widget->selectedItems();
 
-                if (items.empty()) {
+                if (items.empty())
+                {
                     setSelection(std::nullopt);
                     return;
                 }
 
                 auto* item = items.first();
-                int index = _widget->indexOfTopLevelItem(item);
+                auto id = item->data(0, Qt::UserRole);
 
-                if (index < 0)
+                if (!id.isValid())
                     setSelection(std::nullopt);
                 else
-                    setSelection(static_cast<size_t>(index));
+                    setSelection(id.value<Id>());
             }
         );
-
     }
-
 
     private:
         void addItem(const QString& text) {
@@ -119,4 +145,5 @@ class TreeWidget : public ReactiveWidget
     QTreeWidget* _widget;
     Subscription _containerSubscription;
     Subscription _selectionSub;
+    std::vector<QTreeWidgetItem*> _items;
 };

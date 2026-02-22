@@ -8,8 +8,6 @@
 #include <infra/ImageLoader.h>
 #include <infra/TaskScheduler.h>
 
-#include <filesystem>
-
 #include "View.h"
 #include "Model.h"
 #include "Commands/FilterCommand.h"
@@ -25,14 +23,20 @@ void Presenter::start()
 {
     _view->show();
     _view->bindModel(*_model);
-    _view->bindActionMap(_actionMap);
+    _view->bindSceneActionMap(_sceneActionMap);
+    _view->bindTreeActionMap(_treeActionMap);
 
     _selectionSubscription = _model->selection().subscribe(
         [this](const std::optional<size_t>& idx)
             {
-                if (!idx)
+                refresh();   
+                if (!idx) {
+                    _treeActionMap.remove("Save");
+                    _treeActionMap.remove("Remove");
                     return;
-                refresh();
+                }
+                _treeActionMap.add("Save", [this]() { onSaveImage(); });
+                _treeActionMap.add("Remove", [i=*idx, this](){ onRemoveImage(i); });
             }
         );
 
@@ -49,9 +53,8 @@ void Presenter::onOpenImage()
 
     TaskScheduler::schedule<ImageData>(
         [path = result->first](){return ImageLoader::load(path);},
-        [this](ImageData&& img){
-            auto uniqueName = _model->generateUniqueName(std::filesystem::path(img.path()).filename().string());
-            _model->addImage(Image(std::move(uniqueName), std::move(img)));
+        [this](ImageData&& img_data){
+            _model->addImage(std::move(img_data));
         } 
     );
 }
@@ -85,6 +88,11 @@ void Presenter::onSaveImage()
         } 
     );
 
+}
+
+void Presenter::onRemoveImage(std::size_t idx)
+{
+    _model->removeImage(idx);
 }
 
 void Presenter::onGrayscale() {
@@ -158,17 +166,19 @@ void Presenter::onRedo()
 void Presenter::initActionMap()
 {
     _view->setOpenCallback([this]() { onOpenImage(); });
-    _actionMap.add("Grayscale", [this]() { if(_model->isImageSelected()) onGrayscale(); });
-    _actionMap.add("Inversion", [this]() { if(_model->isImageSelected()) onInversion(); });
-    _actionMap.add("Binarization", [this]() { if(_model->isImageSelected()) onBinarization(); });
-    _actionMap.add("Fit ImageData", [this]() { _view->fitImage(); });
-    _actionMap.add("Undo", [this]() { onUndo(); });
-    _actionMap.add("Redo", [this]() { onRedo(); });
-    _actionMap.add("Save", [this]() { onSaveImage(); });
+    _sceneActionMap.add("Grayscale", [this]() { if(_model->isImageSelected()) onGrayscale(); });
+    _sceneActionMap.add("Inversion", [this]() { if(_model->isImageSelected()) onInversion(); });
+    _sceneActionMap.add("Binarization", [this]() { if(_model->isImageSelected()) onBinarization(); });
+    _sceneActionMap.add("Fit Image", [this]() { _view->fitImage(); });
+    _sceneActionMap.add("Undo", [this]() { onUndo(); });
+    _sceneActionMap.add("Redo", [this]() { onRedo(); });
+
+    _treeActionMap.add("Open", [this]() { onOpenImage();});
 }
 
 void Presenter::refresh()
 {
     if(auto img = _model->currentImage(); img.has_value())
         _view->setImage(*img);
+    else _view->clear();
 }

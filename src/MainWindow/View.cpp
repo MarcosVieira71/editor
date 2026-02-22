@@ -26,8 +26,8 @@ View::View()
     , _treeWidget(TreeWidget(_window->findChild<QTreeWidget*>("treeWidget")))
     , _scene(QGraphicsScene())
     , _sceneContextMenu(_window->findChild<QGraphicsView*>("graphicsView"))
+    , _imageTreeContextMenu(_treeWidget.widget())
     , _openAction(_window->findChild<QAction*>("actionOpen"))
-
 {
     auto graphicsView = _window->findChild<QGraphicsView*>("graphicsView");
     if (!graphicsView)
@@ -73,6 +73,11 @@ void View::setImage(const ImageData& img)
     fitImage();
 }
 
+void View::clear()
+{
+    scene()->clear();
+}
+
 void View::fitImage()
 {
     auto graphicsView = _window->findChild<QGraphicsView*>("graphicsView");
@@ -86,21 +91,26 @@ void View::fitImage()
 }
 
 
-void View::bindActionMap(ObservableMap<std::string, std::function<void()>>& map)
+void View::bindSceneActionMap(ObservableMap<std::string, std::function<void()>>& map)
 {
     _sceneContextMenu.bindMap(map);
 }
 
+void View::bindTreeActionMap(ObservableMap<std::string, std::function<void()>>& map)
+{
+    _imageTreeContextMenu.bindMap(map);
+}
+
 void View::bindModel(Model& model)
 {
-    _treeWidget.bindContainer<Image>(model.images(), [](const Image& img){return img.name();});
-    _treeWidget.bindSelection(
+    _treeWidget.bindContainer<Image, std::size_t>(model.images(), [](const Image& img){return img.name();}, [](const Image& img){return img.id();});
+    _treeWidget.bindSelection <std::size_t>(
         model.selection(),
-        [&model](std::optional<size_t> idx) {
-            if (!idx)
+        [&model](std::optional<size_t> id) {
+            if (!id)
                 model.clearSelection();
             else
-                model.select(*idx);
+                model.select(*id);
         }
     );
     _sceneContextMenu.enable(model.selection().view_as<bool>([](const auto& s){

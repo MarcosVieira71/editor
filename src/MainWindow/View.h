@@ -29,13 +29,16 @@ private:
     
     TreeWidget _treeWidget;
     ContextMenu _sceneContextMenu;
+    ContextMenu _imageTreeContextMenu;
     
 public:
     QGraphicsScene* scene();
-    void bindActionMap(ObservableMap<std::string, std::function<void()>>& map);
+    void bindSceneActionMap(ObservableMap<std::string, std::function<void()>>& map);
+    void bindTreeActionMap(ObservableMap<std::string, std::function<void()>>& map);
     void fitImage();
     void show();
     void setImage(const ImageData& pixmap);
+    void clear();
     void bindModel(Model& model);
     void setOpenCallback(std::function<void()>&& openCb);
     std::optional<PathExtension> fileDialog(FileDialogMode mode, const std::string& title, const std::string& filters);

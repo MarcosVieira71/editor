@@ -17,10 +17,12 @@ private:
     std::unique_ptr<View> _view;
     std::unique_ptr<Model> _model;
 
-    ObservableMap<std::string, std::function<void()>> _actionMap;
+    ObservableMap<std::string, std::function<void()>> _sceneActionMap;
+    ObservableMap<std::string, std::function<void()>> _treeActionMap;
     
     void onOpenImage();
     void onSaveImage();
+    void onRemoveImage(std::size_t idx);
     void refresh();
     void initActionMap();
     void onInversion();

@@ -8,9 +8,9 @@ public:
     virtual void apply(ImageData&) = 0;
     virtual void undo(ImageData&) = 0;
 
-    void setTargetIndex(size_t idx) { _targetIndex = idx; }
-    size_t targetIndex() const { return _targetIndex; }
+    void setTargetId(size_t id) { _targetId = id; }
+    size_t targetId() const { return _targetId; }
 
 private:
-    size_t _targetIndex{};
+    size_t _targetId{};
 };

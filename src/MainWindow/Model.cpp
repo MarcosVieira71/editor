@@ -3,23 +3,51 @@
 #include "Commands/Command.h"
 
 #include <stdexcept>
+#include <filesystem>
 
 Model::Model()
 {
 }
 
-void Model::addImage(Image&& img)
+void Model::addImage(ImageData&& img_data)
 {
-    _container.add(std::move(img));
-    _current.set(_container.size() - 1); //last index added
+    auto uniqueName = generateUniqueName(std::filesystem::path(img_data.path()).filename().string());
+    auto image = Image(std::move(uniqueName), std::move(img_data), _nextId++);
+    auto id = image.id();
+    _container.add(std::move(image));
+    _current.set(id); 
 }
+
+std::optional<std::size_t> Model::indexFromId(std::size_t id) const
+{
+    const auto& items = _container.items();
+
+    for (std::size_t i = 0; i < items.size(); ++i)
+        if (items[i].id() == id)
+            return i;
+
+    return std::nullopt;
+}
+
+void Model::removeImage(std::size_t id)
+{
+    auto idx = indexFromId(id);
+    if (!idx)
+        return;
+
+    _container.remove(*idx);
+
+    if (_current.get() == id)
+        clearSelection();
+}
+
 
 std::string Model::generateUniqueName(const std::string& base)
 {
-    int count = _filenameCount[base]++;
+    auto& count = _nameCount[base];
     std::string finalName = base;
     if (count > 0) finalName += "_(" + std::to_string(count) + ")";
-
+    count++;
     return finalName;
 }
 
@@ -28,10 +56,14 @@ bool Model::execute(std::unique_ptr<Command> cmd)
     if (!isImageSelected())
         return false;
 
-    size_t idx = *_current.get();
+    auto id = *_current.get();
+    auto idx = indexFromId(id);
 
-    cmd->setTargetIndex(idx);
-    cmd->apply(_container[idx].image_data());
+    if (!idx)
+    return false;
+
+    cmd->setTargetId(id);
+    cmd->apply(_container[*idx].image_data());
 
     _undo.push_back(std::move(cmd));
     _redo.clear();
@@ -47,12 +79,17 @@ std::optional<size_t> Model::redo()
     auto cmd = std::move(_redo.back());
     _redo.pop_back();
 
-    std::size_t idx = cmd->targetIndex();
+    auto id = cmd->targetId();
+    auto idx = indexFromId(id);
 
-    cmd->apply(_container[idx].image_data());
+    if (!idx)
+        return std::nullopt;
+
+    cmd->apply(_container[*idx].image_data());
+
     _undo.push_back(std::move(cmd));
 
-    return idx;
+    return id;
 }
 
 std::optional<size_t> Model::undo()
@@ -63,18 +100,24 @@ std::optional<size_t> Model::undo()
     auto cmd = std::move(_undo.back());
     _undo.pop_back();
 
-    std::size_t idx = cmd->targetIndex();
+    auto id = cmd->targetId();
+    auto idx = indexFromId(id);
 
-    cmd->undo(_container[idx].image_data());
+    if (!idx)
+        return std::nullopt;
+
+    cmd->undo(_container[*idx].image_data());
+
     _redo.push_back(std::move(cmd));
 
-    return idx;
+    return id;
 }
 
 
 std::optional<std::reference_wrapper<const ImageData>> Model::currentImage() const
 {
-    const auto& idx = _current.get();
+    auto id = *_current.get();
+    auto idx = indexFromId(id);
 
     if (!idx)
         return std::nullopt;
@@ -105,22 +148,22 @@ const ObservableContainer<Image>& Model::images() const
     return _container;
 }
 
-void Model::select(size_t index) 
+void Model::select(std::size_t id)
 {
-    if (index >= _container.size())
-        throw std::out_of_range("Invalid index");
+    if (!indexFromId(id))
+        throw std::out_of_range("Invalid id");
 
-    if(_current.get() == index)
+    if (_current.get() == id)
         return;
-        
-    _current.set(index);
+
+    _current.set(id);
 }
+
 
 
 void Model::clearSelection()
 {
     if (!_current.get().has_value())
         return;
-
     _current.set(std::nullopt);
 }
