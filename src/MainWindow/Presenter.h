@@ -32,6 +32,7 @@ private:
     void onBinarization();
     void onUndo();
     void onRedo();
+    void onRevert();
 
     Subscription _selectionSubscription;
 

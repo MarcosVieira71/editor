@@ -15,6 +15,7 @@ void Model::addImage(ImageData&& img_data)
     auto image = Image(std::move(uniqueName), std::move(img_data), _nextId++);
     auto id = image.id();
     _container.add(std::move(image));
+    _history[id] = CommandHistory{};
     _current.set(id); 
 }
 
@@ -36,6 +37,7 @@ void Model::removeImage(std::size_t id)
         return;
 
     _container.remove(*idx);
+    _history.erase(id);
 
     if (_current.get() == id)
         clearSelection();
@@ -65,21 +67,28 @@ bool Model::execute(std::unique_ptr<Command> cmd)
     cmd->setTargetId(id);
     cmd->apply(_container[*idx].image_data());
 
-    _undo.push_back(std::move(cmd));
-    _redo.clear();
+    auto& history = _history[id];
+
+    history.undo.push_back(std::move(cmd));
+    history.redo.clear();
     return true;
 }
 
 
 std::optional<size_t> Model::redo()
 {
-    if (_redo.empty())
+    if(!isImageSelected())
         return std::nullopt;
 
-    auto cmd = std::move(_redo.back());
-    _redo.pop_back();
+    auto id = *_current.get();
+    auto& history = _history[id];
 
-    auto id = cmd->targetId();
+    if (history.redo.empty())
+        return std::nullopt;
+
+    auto cmd = std::move(history.redo.back());
+    history.redo.pop_back();
+
     auto idx = indexFromId(id);
 
     if (!idx)
@@ -87,20 +96,25 @@ std::optional<size_t> Model::redo()
 
     cmd->apply(_container[*idx].image_data());
 
-    _undo.push_back(std::move(cmd));
+    history.undo.push_back(std::move(cmd));
 
     return id;
 }
 
 std::optional<size_t> Model::undo()
 {
-    if (_undo.empty())
+    if(!isImageSelected())
         return std::nullopt;
 
-    auto cmd = std::move(_undo.back());
-    _undo.pop_back();
+    auto id = *_current.get();
+    auto& history = _history[id];
+    
+    if (history.undo.empty())
+        return std::nullopt;
+    
+    auto cmd = std::move(history.undo.back());
+    history.undo.pop_back();
 
-    auto id = cmd->targetId();
     auto idx = indexFromId(id);
 
     if (!idx)
@@ -108,7 +122,35 @@ std::optional<size_t> Model::undo()
 
     cmd->undo(_container[*idx].image_data());
 
-    _redo.push_back(std::move(cmd));
+    history.redo.push_back(std::move(cmd));
+
+    return id;
+}
+
+std::optional<size_t> Model::revert()
+{
+    if(!isImageSelected())
+        return std::nullopt;
+
+    auto id = *_current.get();
+    auto& history = _history[id];
+
+    if(history.undo.empty())
+        return std::nullopt;
+
+    auto idx = indexFromId(id);
+    if(!idx)
+        return std::nullopt;
+
+    while(!history.undo.empty())
+    {
+        auto cmd = std::move(history.undo.back());
+        history.undo.pop_back();
+
+        cmd->undo(_container[*idx].image_data());
+        
+        history.redo.push_back(std::move(cmd));
+    }
 
     return id;
 }

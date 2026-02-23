@@ -173,6 +173,22 @@ void Presenter::onRedo()
     );  
 }
 
+void Presenter::onRevert()
+{
+    TaskScheduler::schedule<std::optional<std::size_t>>(
+        [this]() {
+           return _model->revert();
+        },
+        [this](std::optional<std::size_t> idx) {
+            if (idx){
+                _model->select(*idx);
+                refresh();
+
+            }
+        }
+    ); 
+}
+
 void Presenter::initActionMap()
 {
     _view->setOpenCallback([this]() { onOpenImage(); });
@@ -183,6 +199,7 @@ void Presenter::initActionMap()
     _sceneActionMap.add("Sobel", [this]() { if(_model->isImageSelected()) onSobel();});
     _sceneActionMap.add("Undo", [this]() { onUndo(); });
     _sceneActionMap.add("Redo", [this]() { onRedo(); });
+    _sceneActionMap.add("Revert", [this]() { onRevert(); });
 
     _treeActionMap.add("Save", [this]() { onSaveImage(); });
 }

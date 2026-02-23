@@ -37,14 +37,21 @@ class Model
     bool execute(std::unique_ptr<Command> cmd);
     std::optional<size_t> redo();
     std::optional<size_t> undo();
+    std::optional<size_t> revert();
 
     private:
     
     ObservableContainer<Image> _container;
     ObservableValue<std::optional<size_t>> _current;
 
-    std::vector<std::unique_ptr<Command>> _undo;
-    std::vector<std::unique_ptr<Command>> _redo;
+    using CommandStack = std::vector<std::unique_ptr<Command>>;
+    struct CommandHistory
+    {
+        CommandStack undo;
+        CommandStack redo;
+    };
+
+    std::map<std::size_t, CommandHistory> _history;
 
     std::map<const std::string,std::size_t> _nameCount;
 
