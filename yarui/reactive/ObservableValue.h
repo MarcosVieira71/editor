@@ -1,6 +1,7 @@
 #pragma once
 
 #include <yarui/reactive/Observable.h>
+#include <yarui/reactive/MappedObservable.h>
 #include <yarui/reactive/Subscription.h>
 
 #include <list>
@@ -41,20 +42,13 @@ public:
     }
 
     template<typename U>
-    ObservableValue<U>& view_as(std::function<U(const T&)> func)
+    MappedObservable<T, U> view_as(std::function<U(const T&)> func)
     {
-        auto derived = std::make_unique<ObservableValue<U>>();
-        ObservableValue<U>* raw_ptr = derived.get();
-        deriveds.emplace_back(std::move(derived));
-        subs.emplace_back(this->subscribe([raw_ptr, func](const T& v){
-            *raw_ptr = func(v);
-        }));
-        return *raw_ptr;
+        return MappedObservable<T, U>(*this, func);
     }
 
 private:
     T _value{};
-    std::vector<std::unique_ptr<ObservableBase>> deriveds;
     std::list<Subscription> subs;
     
 };

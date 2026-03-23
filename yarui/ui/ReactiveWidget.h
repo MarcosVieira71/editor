@@ -15,15 +15,18 @@ public:
     ReactiveWidget(QWidget* widget) : _widget(widget) {}
     virtual ~ReactiveWidget() = default;
 
-    void hide(ObservableValue<bool>& hideObs) {
-        subs.emplace_back(hideObs.subscribe([this](auto& v){
+    template<typename Obs>
+    void hide(Obs&& hideObs) {
+        subs.emplace_back(std::forward<Obs>(hideObs).subscribe([this](auto& v){
             _isHidden = v;
             if (_widget) _widget->setHidden(_isHidden);
         }));
     }
 
-    void enable(ObservableValue<bool>& enableObs) {
-        subs.emplace_back(enableObs.subscribe([this](auto& v){
+    template<typename Obs>
+    void enable(Obs&& enableObs)
+    {
+        subs.emplace_back(std::forward<Obs>(enableObs).subscribe([this](auto& v){
             _isEnabled = v;
             if (_widget) _widget->setEnabled(_isEnabled);
         }));

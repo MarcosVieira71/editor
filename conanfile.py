@@ -21,5 +21,4 @@ class EditorConan(ConanFile):
     default_options = {
         "qt/*:shared": True,
         "qt/*:with_xcb": True,
-        "qt/*:qttools": True
     }
