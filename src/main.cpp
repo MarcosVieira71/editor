@@ -2,7 +2,7 @@
 #include <QTimer>
 
 #include <core/ImageData.h>
-#include <infra/ThreadPool.h>
+#include <infra/threading/ThreadPool.h>
 
 #include "MainWindow/Presenter.h"
 

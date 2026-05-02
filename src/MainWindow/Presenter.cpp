@@ -5,9 +5,8 @@
 #include <core/transformations/grayscale.h>
 #include <core/transformations/inversion.h>
 #include <core/transformations/binarization.h>
-#include <infra/ThreadPool.h>
-#include <infra/ImageLoader.h>
-#include <infra/TaskScheduler.h>
+#include <infra/images/ImageLoader.h>
+#include <infra/threading/TaskScheduler.h>
 
 #include "View.h"
 #include "Model.h"

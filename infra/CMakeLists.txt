@@ -1,6 +1,6 @@
 add_library(infra STATIC
-    ThreadPool.cpp
-    ImageLoader.cpp
+    threading/ThreadPool.cpp
+    images/ImageLoader.cpp
 )
 
 find_package(stb REQUIRED)
