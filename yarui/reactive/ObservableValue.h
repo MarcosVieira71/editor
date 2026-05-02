@@ -6,6 +6,9 @@
 
 #include <list>
 
+namespace yarui
+{
+
 template<typename T>
 class ObservableValue : public Observable<T>
 {
@@ -52,3 +55,5 @@ private:
     std::list<Subscription> subs;
     
 };
+
+}

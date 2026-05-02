@@ -175,17 +175,17 @@ bool Model::isImageSelected()
 }
 
 
-ObservableValue<std::optional<size_t>>& Model::selection()
+yarui::ObservableValue<std::optional<size_t>>& Model::selection()
 {
     return _current;
 };
 
-ObservableContainer<Image>& Model::images()
+yarui::ObservableContainer<Image>& Model::images()
 {
     return _container;
 }
 
-const ObservableContainer<Image>& Model::images() const
+const yarui::ObservableContainer<Image>& Model::images() const
 {
     return _container;
 }

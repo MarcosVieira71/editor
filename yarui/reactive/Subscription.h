@@ -5,6 +5,9 @@
 
 #include <yarui/reactive/ObservableBase.h>
 
+namespace yarui
+{
+
 class Subscription {
 public:
     Subscription() = default;
@@ -36,3 +39,4 @@ private:
     std::weak_ptr<ControlBlock> _control;
     std::size_t _id = 0;
 };
+}

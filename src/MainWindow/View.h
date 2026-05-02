@@ -29,14 +29,14 @@ private:
     QAction* _openAction;
     std::function<void()> _openCb;
     
-    TreeWidget _treeWidget;
-    ContextMenu _sceneContextMenu;
-    ContextMenu _imageTreeContextMenu;
+    yarui::TreeWidget _treeWidget;
+    yarui::ContextMenu _sceneContextMenu;
+    yarui::ContextMenu _imageTreeContextMenu;
     
 public:
     QGraphicsScene* scene();
-    void bindSceneActionMap(ObservableMap<std::string, std::function<void()>>& map);
-    void bindTreeActionMap(ObservableMap<std::string, std::function<void()>>& map);
+    void bindSceneActionMap(yarui::ObservableMap<std::string, std::function<void()>>& map);
+    void bindTreeActionMap(yarui::ObservableMap<std::string, std::function<void()>>& map);
     void fitImage();
     void show();
     void setImage(const ImageData& pixmap);

@@ -2,6 +2,8 @@
 
 #include <yarui/reactive/Observable.h>
 
+namespace yarui {
+
 template<typename T, typename U>
 class MappedObservable : public Observable<U>
 {
@@ -22,3 +24,5 @@ private:
     Observable<T>& _source;
     Func _func;
 };
+
+}

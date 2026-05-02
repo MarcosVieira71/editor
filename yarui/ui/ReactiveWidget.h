@@ -8,6 +8,8 @@
 
 #include <list>
 
+namespace yarui
+{
 
 class ReactiveWidget {
 
@@ -47,3 +49,5 @@ private:
     std::list<Subscription> subs;
     
 };
+
+}

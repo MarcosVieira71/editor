@@ -2,6 +2,9 @@
 
 #include <cstddef>
 
+namespace yarui
+{
+    
 class Subscription;
 
 class ObservableBase
@@ -11,3 +14,5 @@ public:
 
     virtual ~ObservableBase() = default;
 };
+
+}

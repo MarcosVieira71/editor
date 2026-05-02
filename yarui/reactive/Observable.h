@@ -9,6 +9,7 @@
 #include <yarui/reactive/ObservableBase.h>
 #include <yarui/reactive/Subscription.h>
 
+namespace yarui { 
 template<typename Event>
 class Observable : public ObservableBase
 {
@@ -65,3 +66,5 @@ private:
 
     std::shared_ptr<ControlBlock> _control;
 };
+
+}

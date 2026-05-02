@@ -17,8 +17,8 @@ private:
     std::unique_ptr<View> _view;
     std::unique_ptr<Model> _model;
 
-    ObservableMap<std::string, std::function<void()>> _sceneActionMap;
-    ObservableMap<std::string, std::function<void()>> _treeActionMap;
+    yarui::ObservableMap<std::string, std::function<void()>> _sceneActionMap;
+    yarui::ObservableMap<std::string, std::function<void()>> _treeActionMap;
     
     void onOpenImage();
     void onSaveImage();
@@ -34,7 +34,7 @@ private:
     void onRedo();
     void onRevert();
 
-    Subscription _selectionSubscription;
+    yarui::Subscription _selectionSubscription;
 
 public:
     Presenter();

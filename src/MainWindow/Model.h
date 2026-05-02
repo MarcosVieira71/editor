@@ -18,10 +18,10 @@ class Model
     
     public:
     
-    ObservableValue<std::optional<size_t>>& selection();
-    ObservableContainer<Image>& images();
+    yarui::ObservableValue<std::optional<size_t>>& selection();
+    yarui::ObservableContainer<Image>& images();
     
-    const ObservableContainer<Image>& images() const;
+    const yarui::ObservableContainer<Image>& images() const;
     
     void addImage(ImageData&& img);
     void removeImage(std::size_t idx);
@@ -41,8 +41,8 @@ class Model
 
     private:
     
-    ObservableContainer<Image> _container;
-    ObservableValue<std::optional<size_t>> _current;
+    yarui::ObservableContainer<Image> _container;
+    yarui::ObservableValue<std::optional<size_t>> _current;
 
     using CommandStack = std::vector<std::unique_ptr<Command>>;
     struct CommandHistory

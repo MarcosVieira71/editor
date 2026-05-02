@@ -6,6 +6,9 @@
 
 #include <yarui/reactive/Observable.h>
 
+namespace yarui
+{
+
 template<typename K, typename V>
 struct MapEvent
 {
@@ -87,3 +90,5 @@ public:
 private:
     std::map<K, V> _container;
 };
+
+}

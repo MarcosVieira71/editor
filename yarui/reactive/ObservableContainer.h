@@ -6,6 +6,9 @@
 
 #include <yarui/reactive/Observable.h>
 
+namespace yarui
+{
+
 template<typename T>
 struct ContainerEvent
 {
@@ -68,3 +71,5 @@ public:
 private:
     std::vector<T> _container;
 };
+
+}

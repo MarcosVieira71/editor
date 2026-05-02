@@ -11,6 +11,9 @@
 #include <yarui/reactive/Subscription.h>
 #include <yarui/ui/ReactiveWidget.h>
 
+namespace yarui
+{
+
 class TreeWidget : public ReactiveWidget
 {
     public:
@@ -147,3 +150,5 @@ class TreeWidget : public ReactiveWidget
     Subscription _selectionSub;
     std::vector<QTreeWidgetItem*> _items;
 };
+
+}

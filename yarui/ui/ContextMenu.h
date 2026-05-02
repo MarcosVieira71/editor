@@ -13,6 +13,9 @@
 
 #include <yarui/ui/ReactiveWidget.h>
 
+namespace yarui
+{
+
 class ContextMenu : public ReactiveWidget
 {
 public:
@@ -133,3 +136,5 @@ private:
     QMenu _menu;
     std::map<std::string, QAction*> _actions;
 };
+
+}

@@ -5,6 +5,8 @@
 #include <QWidget>
 #include <stdexcept>
 
+namespace yarui
+{
 class UiWidget {
 public:
     explicit UiWidget(const QString& uiPath) {
@@ -25,3 +27,4 @@ public:
 private:
     QWidget* _widget = nullptr;
 };
+}

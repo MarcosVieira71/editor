@@ -22,8 +22,8 @@
 
 #include <stdexcept>
 View::View() 
-    : _window(UiWidget("ui/MainWindow.ui"))
-    , _treeWidget(TreeWidget(_window->findChild<QTreeWidget*>("treeWidget")))
+    : _window(yarui::UiWidget("ui/MainWindow.ui"))
+    , _treeWidget(yarui::TreeWidget(_window->findChild<QTreeWidget*>("treeWidget")))
     , _scene(QGraphicsScene())
     , _sceneContextMenu(_window->findChild<QGraphicsView*>("graphicsView"))
     , _imageTreeContextMenu(_treeWidget.widget())
@@ -86,12 +86,12 @@ void View::fitImage()
 }
 
 
-void View::bindSceneActionMap(ObservableMap<std::string, std::function<void()>>& map)
+void View::bindSceneActionMap(yarui::ObservableMap<std::string, std::function<void()>>& map)
 {
     _sceneContextMenu.bindMap(map);
 }
 
-void View::bindTreeActionMap(ObservableMap<std::string, std::function<void()>>& map)
+void View::bindTreeActionMap(yarui::ObservableMap<std::string, std::function<void()>>& map)
 {
     _imageTreeContextMenu.bindMap(map);
 }
