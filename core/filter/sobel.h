@@ -1,6 +1,9 @@
 #pragma once
 
-#include <core/image/ImageData.h>
+namespace image
+{
+    class ImageData;
+}
 
 namespace filter
 {

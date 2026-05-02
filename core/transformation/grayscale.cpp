@@ -1,6 +1,6 @@
-#include "core/transformation/grayscale.h"
-
-#include "core/utils/to_lum.h"
+#include <core/image/ImageData.h>
+#include <core/transformation/grayscale.h>
+#include <core/utils/to_lum.h>
 
 namespace transformation
 {

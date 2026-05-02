@@ -5,7 +5,9 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-#include "ImageLoader.h"
+#include <infra/images/ImageLoader.h>
+#include <core/image/ImageData.h>
+
 #include <stdexcept>
 #include <cstring>
 

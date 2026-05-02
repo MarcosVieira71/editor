@@ -1,5 +1,6 @@
 #include "Presenter.h"
 
+#include <core/image/Image.h>
 #include <core/image/ImageData.h>
 #include <core/filter/sobel.h>
 #include <core/transformation/grayscale.h>

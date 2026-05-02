@@ -2,7 +2,10 @@
 
 #include <string>
 
-#include <core/image/ImageData.h>
+namespace image
+{
+    class ImageData;
+}
 
 class ImageLoader {
 public:

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <core/image/ImageData.h>
-#include <core/image/Image.h>
 #include <yarui/reactive/ObservableContainer.h>
 #include <yarui/reactive/ObservableValue.h>
 
@@ -10,6 +8,12 @@
 #include <optional>
 #include <map>
 #include <string>
+
+namespace image
+{
+    class Image;
+    class ImageData;
+}
 
 class Command;
 

@@ -1,6 +1,8 @@
 #include "Model.h"
 
 #include "Commands/Command.h"
+#include <core/image/Image.h>
+#include <core/image/ImageData.h>
 
 #include <stdexcept>
 #include <filesystem>

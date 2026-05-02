@@ -9,6 +9,7 @@
 #include <QAction>
 #include <QMessageBox>
 
+#include <core/image/Image.h>
 #include <core/image/ImageData.h>
 
 #include <yarui/reactive/ObservableMap.h>

@@ -1,4 +1,5 @@
-#include "inversion.h"
+#include <core/image/ImageData.h>
+#include <core/transformation/inversion.h>
 
 namespace transformation
 {

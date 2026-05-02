@@ -1,7 +1,7 @@
-#include "core/transformation/binarization.h"
+#include <core/transformation/binarization.h>
 
-#include "core/image/ImageData.h"
-#include "core/utils/to_lum.h"
+#include <core/image/ImageData.h>
+#include <core/utils/to_lum.h>
 
 #include <cmath>
 #include <vector>
