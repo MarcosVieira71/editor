@@ -2,11 +2,11 @@
 
 #include <string>
 
-#include <core/ImageData.h>
+#include <core/image/ImageData.h>
 
 class ImageLoader {
 public:
-    static ImageData load(const std::string& path);
+    static image::ImageData load(const std::string& path);
 
-    static void save(const ImageData& image, const std::string& path, const std::string& extension);
+    static void save(const image::ImageData& image, const std::string& path, const std::string& extension);
 };

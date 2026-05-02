@@ -1,9 +1,12 @@
 #pragma once
 
-#include <core/RGBA.h>
+#include <core/image/RGBA.h>
 
 #include <string>
 #include <vector>
+
+namespace image
+{
 
 class ImageData
 {
@@ -37,3 +40,4 @@ class ImageData
         std::vector<RGBA> _pixels;
 
 };
+}

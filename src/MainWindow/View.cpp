@@ -9,7 +9,7 @@
 #include <QAction>
 #include <QMessageBox>
 
-#include <core/ImageData.h>
+#include <core/image/ImageData.h>
 
 #include <yarui/reactive/ObservableMap.h>
 
@@ -62,7 +62,7 @@ void View::setOpenCallback(std::function<void()>&& openCb)
     _openCb = std::move(openCb);
 }
 
-void View::setImage(const ImageData& img)
+void View::setImage(const image::ImageData& img)
 {
     auto pixmap = QPixmap::fromImage(toQImage(img));
     scene()->clear();
@@ -98,7 +98,7 @@ void View::bindTreeActionMap(yarui::ObservableMap<std::string, std::function<voi
 
 void View::bindModel(Model& model)
 {
-    _treeWidget.bindContainer<Image, std::size_t>(model.images(), [](const Image& img){return img.name();}, [](const Image& img){return img.id();});
+    _treeWidget.bindContainer<image::Image, std::size_t>(model.images(), [](const image::Image& img){return img.name();}, [](const image::Image& img){return img.id();});
     _treeWidget.bindSelection <std::size_t>(
         model.selection(),
         [&model](std::optional<size_t> id) {

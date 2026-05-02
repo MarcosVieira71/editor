@@ -1,10 +1,10 @@
 #include "Presenter.h"
 
-#include <core/ImageData.h>
-#include <core/filters/sobel.h>
-#include <core/transformations/grayscale.h>
-#include <core/transformations/inversion.h>
-#include <core/transformations/binarization.h>
+#include <core/image/ImageData.h>
+#include <core/filter/sobel.h>
+#include <core/transformation/grayscale.h>
+#include <core/transformation/inversion.h>
+#include <core/transformation/binarization.h>
 #include <infra/images/ImageLoader.h>
 #include <infra/threading/TaskScheduler.h>
 
@@ -49,9 +49,9 @@ void Presenter::onOpenImage()
     if (!result.has_value())
         return;
 
-    TaskScheduler::schedule<ImageData>(
+    TaskScheduler::schedule<image::ImageData>(
         [path = result->first](){return ImageLoader::load(path);},
-        [this](ImageData&& img_data){
+        [this](image::ImageData&& img_data){
             _model->addImage(std::move(img_data));
         } 
     );
@@ -96,7 +96,7 @@ void Presenter::onRemoveImage(std::size_t id)
 void Presenter::onGrayscale() {
     TaskScheduler::schedule(
         [this]() { 
-            _model->execute(std::make_unique<FilterCommand>(grayscale)); 
+            _model->execute(std::make_unique<FilterCommand>(transformation::grayscale)); 
         },
         [this]() { 
             refresh(); 
@@ -108,7 +108,7 @@ void Presenter::onInversion()
 {
     TaskScheduler::schedule(
         [this]() {
-            _model->execute(std::make_unique<FilterCommand>(inversion));
+            _model->execute(std::make_unique<FilterCommand>(transformation::inversion));
         },
         [this](){
             refresh();
@@ -121,7 +121,7 @@ void Presenter::onBinarization()
 {
     TaskScheduler::schedule(
         [this]() {
-            _model->execute(std::make_unique<FilterCommand>(binarization));
+            _model->execute(std::make_unique<FilterCommand>(transformation::binarization));
         },
         [this]() {
             refresh();
@@ -133,7 +133,7 @@ void Presenter::onSobel()
 {
     TaskScheduler::schedule(
         [this]() {
-            _model->execute(std::make_unique<FilterCommand>(sobel));
+            _model->execute(std::make_unique<FilterCommand>(filter::sobel));
         },
         [this]() {
             refresh();

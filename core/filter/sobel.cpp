@@ -1,11 +1,14 @@
-#include "core/filters/sobel.h"
+#include "core/filter/sobel.h"
 #include "core/utils/to_lum.h"
 
 #include <cmath>
 
-ImageData sobel(const ImageData& input)
+namespace filter
 {
-    ImageData out = input.clone();
+
+image::ImageData sobel(const image::ImageData& input)
+{
+    image::ImageData out = input.clone();
 
     int w = input.width();
     int h = input.height();
@@ -42,9 +45,9 @@ ImageData sobel(const ImageData& input)
                     if (ny < 0) ny = 0;
                     if (ny >= h) ny = h - 1;
 
-                    const RGBA& p = input.pixel(nx, ny);
+                    const image::RGBA& p = input.pixel(nx, ny);
 
-                    int gray = static_cast<int>(to_lum(p));
+                    int gray = static_cast<int>(utils::to_lum(p));
 
                     sumX += gray * sX[ky + 1][kx + 1];
                     sumY += gray * sY[ky + 1][kx + 1];
@@ -63,4 +66,6 @@ ImageData sobel(const ImageData& input)
     }
 
     return out;
+}
+
 }

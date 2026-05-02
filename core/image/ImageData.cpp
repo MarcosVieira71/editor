@@ -1,10 +1,11 @@
-#include "ImageData.h"
-
-
+#include "core/image/ImageData.h"
 
 #include <cstring>
 #include <stdexcept>
 #include <string>
+
+namespace image
+{
 
 ImageData::ImageData(int width, int height, int channels, const std::string& path)
     : _width(width), _height(height), _channels(channels), _path(path)
@@ -79,4 +80,6 @@ const unsigned char* ImageData::bytes() const
 const std::vector<RGBA>& ImageData::buffer() const
 {
     return _pixels;    
+}
+    
 }

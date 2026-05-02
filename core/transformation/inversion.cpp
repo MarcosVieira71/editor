@@ -1,8 +1,11 @@
 #include "inversion.h"
 
-ImageData inversion(const ImageData& input)
+namespace transformation
 {
-    ImageData out = input.clone();
+
+image::ImageData inversion(const image::ImageData& input)
+{
+    image::ImageData out = input.clone();
 
     auto* src = input.data();
     auto* dst = out.data();
@@ -16,4 +19,6 @@ ImageData inversion(const ImageData& input)
     }
 
     return out;
+}
+
 }

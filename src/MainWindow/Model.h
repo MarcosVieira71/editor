@@ -1,7 +1,7 @@
 #pragma once
 
-#include <core/ImageData.h>
-#include <core/Image.h>
+#include <core/image/ImageData.h>
+#include <core/image/Image.h>
 #include <yarui/reactive/ObservableContainer.h>
 #include <yarui/reactive/ObservableValue.h>
 
@@ -19,18 +19,18 @@ class Model
     public:
     
     yarui::ObservableValue<std::optional<size_t>>& selection();
-    yarui::ObservableContainer<Image>& images();
+    yarui::ObservableContainer<image::Image>& images();
     
-    const yarui::ObservableContainer<Image>& images() const;
+    const yarui::ObservableContainer<image::Image>& images() const;
     
-    void addImage(ImageData&& img);
+    void addImage(image::ImageData&& img);
     void removeImage(std::size_t idx);
     std::optional<std::size_t> indexFromId(std::size_t id) const;
     
     Model();
     ~Model() = default;
     
-    std::optional<std::reference_wrapper<const ImageData>>currentImage() const;
+    std::optional<std::reference_wrapper<const image::ImageData>>currentImage() const;
     bool isImageSelected();
     void select(size_t index);
     void clearSelection();
@@ -41,7 +41,7 @@ class Model
 
     private:
     
-    yarui::ObservableContainer<Image> _container;
+    yarui::ObservableContainer<image::Image> _container;
     yarui::ObservableValue<std::optional<size_t>> _current;
 
     using CommandStack = std::vector<std::unique_ptr<Command>>;

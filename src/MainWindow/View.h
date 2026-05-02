@@ -13,7 +13,11 @@
 #include <optional>
 #include <string>
 
-class ImageData;
+namespace image
+{
+    class ImageData;
+}
+
 class Model;
 class QGraphicsView;
 
@@ -39,7 +43,7 @@ public:
     void bindTreeActionMap(yarui::ObservableMap<std::string, std::function<void()>>& map);
     void fitImage();
     void show();
-    void setImage(const ImageData& pixmap);
+    void setImage(const image::ImageData& pixmap);
     void clear();
     void bindModel(Model& model);
     void setOpenCallback(std::function<void()>&& openCb);

@@ -9,10 +9,10 @@ Model::Model()
 {
 }
 
-void Model::addImage(ImageData&& img_data)
+void Model::addImage(image::ImageData&& img_data)
 {
     auto uniqueName = generateUniqueName(std::filesystem::path(img_data.path()).filename().string());
-    auto image = Image(std::move(uniqueName), std::move(img_data), _nextId++);
+    auto image = image::Image(std::move(uniqueName), std::move(img_data), _nextId++);
     auto id = image.id();
     _container.add(std::move(image));
     _history[id] = CommandHistory{};
@@ -156,7 +156,7 @@ std::optional<size_t> Model::revert()
 }
 
 
-std::optional<std::reference_wrapper<const ImageData>> Model::currentImage() const
+std::optional<std::reference_wrapper<const image::ImageData>> Model::currentImage() const
 {
     auto id = *_current.get();
     auto idx = indexFromId(id);
@@ -180,12 +180,12 @@ yarui::ObservableValue<std::optional<size_t>>& Model::selection()
     return _current;
 };
 
-yarui::ObservableContainer<Image>& Model::images()
+yarui::ObservableContainer<image::Image>& Model::images()
 {
     return _container;
 }
 
-const yarui::ObservableContainer<Image>& Model::images() const
+const yarui::ObservableContainer<image::Image>& Model::images() const
 {
     return _container;
 }

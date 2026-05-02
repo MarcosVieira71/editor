@@ -1,18 +1,21 @@
+#include "core/transformation/binarization.h"
 
-#include "core/ImageData.h"
+#include "core/image/ImageData.h"
 #include "core/utils/to_lum.h"
 
 #include <cmath>
 #include <vector>
 
-
-int otsu_method(const std::vector<RGBA>& buffer)
+namespace transformation
 {
-    std::vector<int> hist(256, 0.0);
+
+int otsu_method(const std::vector<image::RGBA>& buffer)
+{
+    std::vector<int> hist(256, 0);
 
     for(const auto& rgba : buffer)
     {
-        auto lum = to_lum(rgba);
+        auto lum = utils::to_lum(rgba);
         hist[static_cast<int>(std::round(lum))]++;
     }
 
@@ -61,11 +64,11 @@ int otsu_method(const std::vector<RGBA>& buffer)
 }
 
 
-ImageData binarization(const ImageData& input)
+image::ImageData binarization(const image::ImageData& input)
 {
     auto threshold = otsu_method(input.buffer());
 
-    ImageData out = input.clone();
+    image::ImageData out = input.clone();
 
     const auto* src = input.data();
     auto* dst = out.data();
@@ -77,4 +80,6 @@ ImageData binarization(const ImageData& input)
     }
 
     return out;
+}
+
 }

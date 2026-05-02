@@ -1,10 +1,10 @@
 #pragma once
 
-#include <core/ImageData.h>
+#include <core/image/ImageData.h>
 
 #include <QImage>
 
-inline QImage toQImage(const ImageData& image)
+inline QImage toQImage(const image::ImageData& image)
 {
     QImage qimg(
         image.bytes(),

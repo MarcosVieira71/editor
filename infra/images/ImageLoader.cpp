@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <cstring>
 
-ImageData ImageLoader::load(const std::string& path)
+image::ImageData ImageLoader::load(const std::string& path)
 {
     int width, height, channels;
 
@@ -24,12 +24,12 @@ ImageData ImageLoader::load(const std::string& path)
     if (!data)
         throw std::runtime_error("Failed to load image");
 
-    ImageData img(width, height, 4, path);
+    image::ImageData img(width, height, 4, path);
 
     std::memcpy(
         img.data(),
         data,
-        width * height * sizeof(RGBA)
+        width * height * sizeof(image::RGBA)
     );
 
     stbi_image_free(data);
@@ -38,7 +38,7 @@ ImageData ImageLoader::load(const std::string& path)
 }
 
 
-void ImageLoader::save(const ImageData& image, const std::string& path, const std::string& extension)
+void ImageLoader::save(const image::ImageData& image, const std::string& path, const std::string& extension)
 {
     const int width = image.width();
     const int height = image.height();

@@ -1,10 +1,10 @@
 add_library(core STATIC
-    ImageData.cpp
-    Image.cpp
-    transformations/grayscale.cpp
-    transformations/inversion.cpp
-    transformations/binarization.cpp
-    filters/sobel.cpp
+    image/ImageData.cpp
+    image/Image.cpp
+    transformation/grayscale.cpp
+    transformation/inversion.cpp
+    transformation/binarization.cpp
+    filter/sobel.cpp
 )
 
 find_package(OpenMP REQUIRED)

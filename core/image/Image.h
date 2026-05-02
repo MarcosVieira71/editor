@@ -1,8 +1,11 @@
 #pragma once
 
-#include <core/ImageData.h>
+#include <core/image/ImageData.h>
 
 #include <string>
+
+namespace image
+{
 
 class Image
 {
@@ -19,3 +22,5 @@ private:
     ImageData _image_data;
     std::size_t _id;
 };
+    
+}
